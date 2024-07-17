@@ -122,12 +122,22 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public Collection<FilmDto> getPopularFilms(int count) {
+    public Collection<FilmDto> getPopularFilms(int count, Integer year, Integer genreId) {
+        if (genreId != null) {
+            boolean genreExists = genreStorage.getAllGenres().stream()
+                    .map(Genre::getId)
+                    .anyMatch(id -> id.equals(genreId));
+            if (!genreExists) {
+                throw new ValidationException("Не существует жанра с ID: " + genreId);
+            }
+        }
+
         log.info("Выводится список популярных фильмов");
-        return filmStorage.getPopularFilms(count).stream()
+        return filmStorage.getPopularFilms(count, year, genreId).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
     }
+
 
     @Override
     public FilmDto addLike(Integer filmId, Integer userId) {

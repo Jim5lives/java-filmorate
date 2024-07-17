@@ -15,7 +15,7 @@ public interface FilmService {
 
     FilmDto updateFilm(UpdateFilmRequest updatedFilm);
 
-    Collection<FilmDto> getPopularFilms(int count);
+    Collection<FilmDto> getPopularFilms(int count,Integer year, Integer genreId);
 
     FilmDto addLike(Integer filmId, Integer userId);
 

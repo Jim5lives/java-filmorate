@@ -113,12 +113,15 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     }
 
     @Override
-    public Collection<Film> getPopularFilms(int count) {
+    public Collection<Film> getPopularFilms(int count, Integer year, Integer genreId) {
         List<Film> films = getAllFilms().stream()
+                .filter(film -> (year == null || film.getReleaseDate().getYear() == year))
+                .filter(film -> (genreId == null ||
+                        film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId))))
                 .sorted(Comparator.comparingInt(film -> film.getLikes().size()))
                 .limit(count)
                 .toList();
         return films.reversed();
-
     }
+
 }
