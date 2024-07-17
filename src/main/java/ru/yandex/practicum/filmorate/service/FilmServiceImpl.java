@@ -167,4 +167,17 @@ public class FilmServiceImpl implements FilmService {
         log.info("Пользователь id={} убрал лайк с фильма id={}", user.getId(), filmId);
         return FilmMapper.mapToFilmDto(film);
     }
+
+    @Override
+    public Collection<FilmDto> getCommonFilms(Integer userId, Integer friendId) {
+        userStorage.findUserById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + userId));
+        userStorage.findUserById(friendId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + friendId));
+
+        return filmStorage.getCommonFilms(userId, friendId)
+                .stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
+    }
 }

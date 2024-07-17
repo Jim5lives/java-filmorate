@@ -20,4 +20,6 @@ public interface FilmService {
     FilmDto addLike(Integer filmId, Integer userId);
 
     FilmDto deleteLike(Integer filmId, Integer userId);
+
+    Collection<FilmDto> getCommonFilms(Integer userId, Integer friendId);
 }
