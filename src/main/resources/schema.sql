@@ -42,3 +42,18 @@ CREATE TABLE IF NOT EXISTS friends (
     user_id INTEGER REFERENCES app_user(id),
     friend_id INTEGER REFERENCES app_user(id)
 );
+
+CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    user_id INTEGER REFERENCES app_user(id),
+    film_id INTEGER REFERENCES film(id),
+    content VARCHAR(255),
+    isPositive integer
+);
+
+CREATE TABLE IF NOT EXISTS review_likes_dislikes (
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE,
+    review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
+    like_dislike INTEGER,
+    PRIMARY KEY (user_id, review_id)
+);
