@@ -48,6 +48,13 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     private static final String ADD_LIKE_QUERY = "INSERT INTO film_likes (film_id, user_id) VALUES (?, ?)";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM film_likes WHERE film_id = ? AND user_id = ?";
 
+    private static final String FIND_COMMON_FILMS_QUERY = "WITH common_films_id as (" +
+            "SELECT fl1.film_id FROM film_likes fl1 " +
+            "JOIN film_likes fl2 ON fl1.film_id = fl2.film_id " +
+            "WHERE fl1.user_id = ? and fl2.user_id = ? ) " +
+            FIND_ALL_QUERY +
+            " WHERE f.id in (SELECT film_id FROM common_films_id)";
+
     public DataBaseFilmStorage(JdbcTemplate jdbc, ResultSetExtractor<List<Film>> listExtractor) {
         super(listExtractor, jdbc);
     }
@@ -124,4 +131,8 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
         return films.reversed();
     }
 
+    @Override
+    public Collection<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return findManyExtractor(FIND_COMMON_FILMS_QUERY, userId, friendId);
+    }
 }
