@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 import java.util.Collection;
 
 @RestController
@@ -51,14 +52,14 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public FilmDto addLike(@PathVariable("id") Integer filmId,
-                        @PathVariable Integer userId) {
+                           @PathVariable Integer userId) {
         log.info("Получен запрос на добавление лайка фильму с id={} от пользователя с id={}", filmId, userId);
         return filmService.addLike(filmId, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public FilmDto deleteLike(@PathVariable("id") Integer filmId,
-                           @PathVariable Integer userId) {
+                              @PathVariable Integer userId) {
         log.info("Получен запрос на удаление лайка у фильма с id={} от пользователя с id={}", filmId, userId);
         return filmService.deleteLike(filmId, userId);
     }

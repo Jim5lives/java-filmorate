@@ -5,13 +5,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 @Primary
@@ -20,18 +18,25 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     private static final String INSERT_QUERY = "INSERT INTO film (name, description, release_date, duration, " +
             "mpa_id) VALUES (?, ?, ?, ?, ?)";
     private static final String INSERT_FILM_GENRES_QUERY = "INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)";
+    private static final String INSERT_FILM_DIRECTOR_QUERY = "INSERT INTO film_directors (film_id, director_id) " +
+            "VALUES (?, ?)";
+
     private static final String FIND_BY_ID_QUERY =
             "SELECT f.*, " +
                     "m.name AS mpa_name, " +
                     "fg.genre_id AS genres_id, " +
                     "g.name AS genre_name, " +
-                    "fl.user_id AS likes_id " +
+                    "fl.user_id AS likes_id, " +
+                    "fd.director_id AS directors_id, " +
+                    "d.name AS director_name " +
                     "FROM film f " +
                     "LEFT JOIN mpa m ON f.mpa_id = m.id " +
                     "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
                     "LEFT JOIN genre g ON fg.genre_id = g.id " +
                     "LEFT JOIN film_likes fl ON f.id = fl.film_id " +
-                    "WHERE f.id = ?;";
+                    "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
+                    "LEFT JOIN director d ON fd.director_id = d.id " +
+                    "WHERE f.id = ?";
     private static final String FIND_ALL_QUERY =
             "SELECT  f.*, " +
                     "m.name AS mpa_name, " +
@@ -43,6 +48,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                     "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
                     "LEFT JOIN genre g ON fg.genre_id = g.id " +
                     "LEFT JOIN film_likes fl ON f.id = fl.film_id";
+
     private static final String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, release_date = ?, " +
             "duration = ? WHERE id = ?";
     private static final String ADD_LIKE_QUERY = "INSERT INTO film_likes (film_id, user_id) VALUES (?, ?)";
@@ -51,7 +57,6 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     public DataBaseFilmStorage(JdbcTemplate jdbc, ResultSetExtractor<List<Film>> listExtractor) {
         super(listExtractor, jdbc);
     }
-
 
     @Override
     public Collection<Film> getAllFilms() {
@@ -63,7 +68,6 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     public Optional<Film> findFilmById(Integer id) {
         return findOneExtractor(FIND_BY_ID_QUERY, id);
     }
-
 
     @Override
     public Film createFilm(Film film) {
@@ -80,6 +84,10 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
             insert(INSERT_FILM_GENRES_QUERY, id, genre.getId());
         }
 
+        for (Director director : film.getDirectors()) {
+            insert(INSERT_FILM_DIRECTOR_QUERY, id, director.getId());
+        }
+
         return film;
     }
 
@@ -93,6 +101,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                 updatedFilm.getDuration(),
                 updatedFilm.getId()
         );
+
         return updatedFilm;
     }
 
@@ -123,5 +132,4 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                 .toList();
         return films.reversed();
     }
-
 }

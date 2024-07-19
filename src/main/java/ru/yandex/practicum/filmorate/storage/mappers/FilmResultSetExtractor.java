@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
+
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.Comparator;
@@ -58,4 +59,3 @@ public class FilmResultSetExtractor implements ResultSetExtractor<Film> {
         return film;
     }
 }
-

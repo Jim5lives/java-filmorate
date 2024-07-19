@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.dto;
 
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.Director;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 public class UpdateUserRequest {
@@ -11,6 +13,7 @@ public class UpdateUserRequest {
     private String login;
     private String name;
     private LocalDate birthday;
+
 
     public boolean hasEmail() {
         return ! (email == null || email.isBlank());

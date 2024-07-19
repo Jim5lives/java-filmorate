@@ -84,4 +84,5 @@ public class InMemoryFilmStorage implements FilmStorage {
     private Integer getNextFilmId() {
         return ++id;
     }
+
 }

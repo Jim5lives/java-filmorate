@@ -37,8 +37,20 @@ CREATE TABLE IF NOT EXISTS film_genres (
     genre_id INTEGER REFERENCES genre(id)
 );
 
+CREATE TABLE IF NOT EXISTS director (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS film_directors (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    film_id INTEGER REFERENCES film(id),
+    director_id INTEGER REFERENCES director(id)
+);
+
 CREATE TABLE IF NOT EXISTS friends (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     user_id INTEGER REFERENCES app_user(id),
     friend_id INTEGER REFERENCES app_user(id)
 );
+
