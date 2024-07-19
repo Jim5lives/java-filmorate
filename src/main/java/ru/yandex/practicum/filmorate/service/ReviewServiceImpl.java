@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.service.reviews;
+package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.reviews.NewReviewRequest;
-import ru.yandex.practicum.filmorate.dto.reviews.ReviewDto;
-import ru.yandex.practicum.filmorate.dto.reviews.UpdatedReviewRequest;
+import ru.yandex.practicum.filmorate.dto.NewReviewRequest;
+import ru.yandex.practicum.filmorate.dto.ReviewDto;
+import ru.yandex.practicum.filmorate.dto.UpdatedReviewRequest;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.mappers.ReviewMapper;
@@ -14,7 +14,7 @@ import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.storage.reviews.ReviewStorage;
+import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 
 import java.util.List;
 

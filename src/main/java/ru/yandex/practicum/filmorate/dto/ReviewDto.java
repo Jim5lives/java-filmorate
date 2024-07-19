@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dto.reviews;
+package ru.yandex.practicum.filmorate.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -13,5 +13,5 @@ public class ReviewDto {
     private String content;
     @JsonProperty("isPositive")
     private boolean isPositive;
-    private int useful; //how many times review was liked
+    private int useful; //difference between likes and dislikes
 }

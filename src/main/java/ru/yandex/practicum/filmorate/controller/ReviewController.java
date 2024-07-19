@@ -4,10 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.reviews.NewReviewRequest;
-import ru.yandex.practicum.filmorate.dto.reviews.ReviewDto;
-import ru.yandex.practicum.filmorate.dto.reviews.UpdatedReviewRequest;
-import ru.yandex.practicum.filmorate.service.reviews.ReviewService;
+import ru.yandex.practicum.filmorate.dto.NewReviewRequest;
+import ru.yandex.practicum.filmorate.dto.ReviewDto;
+import ru.yandex.practicum.filmorate.dto.UpdatedReviewRequest;
+import ru.yandex.practicum.filmorate.service.ReviewService;
 
 import java.util.List;
 
