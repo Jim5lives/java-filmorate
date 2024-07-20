@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.DirectorDto;
+import ru.yandex.practicum.filmorate.dto.NewDirectorRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateDirectorRequest;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.mappers.DirectorMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
@@ -28,30 +31,37 @@ public class DirectorServiceImpl implements DirectorService {
     public DirectorDto findDirectorById(Integer id) {
         return directorStorage.findDirectorById(id)
                 .map(DirectorMapper::mapToDirectorDto)
-                .orElseThrow(() -> new NotFoundException("Не найден жанр с ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Не найден режиссер с ID: " + id));
     }
 
     @Override
-    public DirectorDto addDirector(DirectorDto directorDto) {
-        Director director = DirectorMapper.mapToDirector(directorDto);
-        Integer id = directorStorage.addDirector(director).getId();
-        directorDto.setId(id);
-        return directorDto;
+    public DirectorDto addDirector(NewDirectorRequest request) {
+        Director director = DirectorMapper.mapToDirector(request);
+        director = directorStorage.addDirector(director);
+        log.info("Режиссер успешно создан, ID = {}", director.getId());
+        return DirectorMapper.mapToDirectorDto(director);
     }
 
     @Override
-    public DirectorDto updateDirector(DirectorDto directorDto) {
-        int id = directorDto.getId();
-        Director dir = directorStorage.findDirectorById(id).orElseThrow(()
-                -> new NotFoundException("Не найден режиссер с ID: " + id));
-        Director director = DirectorMapper.mapToDirector(directorDto);
-        Director updatedDirector = directorStorage.updateDirector(director);
+    public DirectorDto updateDirector(UpdateDirectorRequest request) {
+        if (request.getId() == null) {
+            log.warn("Не указан id режиссера для обновления");
+            throw new ValidationException("Id режиссера для обновления должен быть указан.");
+        }
 
+        Director directorToUpdate = directorStorage.findDirectorById(request.getId()).orElseThrow(()
+                -> new NotFoundException("Не найден режиссер с ID: " + request.getId()));
+
+        Director updatedDirector = DirectorMapper.updateDirectorFields(directorToUpdate, request);
+        updatedDirector = directorStorage.updateDirector(updatedDirector);
+
+        log.info("Режиссер обновлен {}", updatedDirector);
         return DirectorMapper.mapToDirectorDto(updatedDirector);
     }
 
     @Override
     public void deleteDirector(int id) {
         directorStorage.deleteDirector(id);
+        log.info("Режиссер с ID = {} удален", id);
     }
 }

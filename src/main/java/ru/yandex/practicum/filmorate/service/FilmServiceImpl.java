@@ -79,8 +79,11 @@ public class FilmServiceImpl implements FilmService {
         } else {
             film.setDirectors(new HashSet<>());
         }
-        film = filmStorage.createFilm(film);
-
+        try {
+            film = filmStorage.createFilm(film);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // маппинг
         FilmDto filmDto = FilmMapper.mapToFilmDto(film);
 

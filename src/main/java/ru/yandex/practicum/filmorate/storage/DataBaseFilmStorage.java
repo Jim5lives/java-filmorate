@@ -20,7 +20,6 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     private static final String INSERT_FILM_GENRES_QUERY = "INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)";
     private static final String INSERT_FILM_DIRECTOR_QUERY = "INSERT INTO film_directors (film_id, director_id) " +
             "VALUES (?, ?)";
-
     private static final String FIND_BY_ID_QUERY =
             "SELECT f.*, " +
                     "m.name AS mpa_name, " +

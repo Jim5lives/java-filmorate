@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.dto.DirectorDto;
+import ru.yandex.practicum.filmorate.dto.NewDirectorRequest;
+import ru.yandex.practicum.filmorate.dto.UpdateDirectorRequest;
 
 import java.util.Collection;
 
@@ -9,9 +11,9 @@ public interface DirectorService {
 
     DirectorDto findDirectorById(Integer id);
 
-    DirectorDto addDirector(DirectorDto directorDto);
+    DirectorDto addDirector(NewDirectorRequest request);
 
-    DirectorDto updateDirector(DirectorDto directorDto);
+    DirectorDto updateDirector(UpdateDirectorRequest request);
 
     void deleteDirector(int id);
 

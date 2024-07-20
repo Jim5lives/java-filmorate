@@ -28,15 +28,15 @@ public class DirectorController {
     }
 
     @PostMapping
-    public DirectorDto addDirector(@RequestBody DirectorDto directorDto) {
+    public DirectorDto addDirector(@RequestBody NewDirectorRequest request) {
         log.info("Получен запрос на создание режиссера");
-        return directorService.addDirector(directorDto);
+        return directorService.addDirector(request);
     }
 
     @PutMapping
-    public DirectorDto updateDirector(@RequestBody DirectorDto directorDto) {
+    public DirectorDto updateDirector(@RequestBody UpdateDirectorRequest request) {
         log.info("Получен запрос на обновление режиссера");
-        return directorService.updateDirector(directorDto);
+        return directorService.updateDirector(request);
     }
 
     @DeleteMapping("/{id}")
