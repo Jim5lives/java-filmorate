@@ -82,6 +82,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return popularFilms.reversed();
     }
 
+    @Override
+    public Collection<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return null;
+    }
+
     private Integer getNextFilmId() {
         return ++id;
     }

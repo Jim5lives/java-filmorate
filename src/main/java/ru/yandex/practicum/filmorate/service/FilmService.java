@@ -24,4 +24,6 @@ public interface FilmService {
     FilmDto deleteLike(Integer filmId, Integer userId);
 
     List<FilmDto> getFilmsByDirector(String sortBy, Integer directorId);
+
+    Collection<FilmDto> getCommonFilms(Integer userId, Integer friendId);
 }

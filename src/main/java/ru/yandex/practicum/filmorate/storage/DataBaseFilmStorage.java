@@ -97,6 +97,13 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
             "VALUES (?, ?)";
     private static final String DELETE_FILM_DIRECTORS_QUERY = "DELETE FROM film_directors WHERE film_id =?";
 
+    private static final String FIND_COMMON_FILMS_QUERY = "WITH common_films_id as (" +
+            "SELECT fl1.film_id FROM film_likes fl1 " +
+            "JOIN film_likes fl2 ON fl1.film_id = fl2.film_id " +
+            "WHERE fl1.user_id = ? and fl2.user_id = ? ) " +
+            FIND_ALL_QUERY +
+            " WHERE f.id in (SELECT film_id FROM common_films_id)";
+
     public DataBaseFilmStorage(JdbcTemplate jdbc, ResultSetExtractor<List<Film>> listExtractor) {
         super(listExtractor, jdbc);
     }
@@ -198,5 +205,10 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     private List<Film> getDirectorFilmsByLikes(Integer directorId) {
         findManyExtractor(FIND_FILM_DIRECTORS_BY_LIKES, directorId);
         return findManyExtractor(FIND_FILM_DIRECTORS_BY_LIKES, directorId);
+    }
+  
+    @Override
+    public Collection<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return findManyExtractor(FIND_COMMON_FILMS_QUERY, userId, friendId);
     }
 }
