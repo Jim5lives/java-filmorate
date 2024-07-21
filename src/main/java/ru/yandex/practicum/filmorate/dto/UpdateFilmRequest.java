@@ -23,7 +23,6 @@ public class UpdateFilmRequest {
     private Set<Director> directors;
 
 
-
     public boolean hasName() {
         return !(name == null || name.isBlank());
     }

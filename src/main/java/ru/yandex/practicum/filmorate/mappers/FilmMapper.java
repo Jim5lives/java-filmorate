@@ -66,8 +66,8 @@ public final class FilmMapper {
         dto.setMpa(MpaMapper.mapToMpaDto(film.getMpa()));
 
         Set<DirectorDto> directorsDto = film.getDirectors().stream()
-                        .map(DirectorMapper::mapToDirectorDto)
-                                .collect(Collectors.toSet());
+                .map(DirectorMapper::mapToDirectorDto)
+                .collect(Collectors.toSet());
         dto.setDirectors(directorsDto);
         return dto;
     }
