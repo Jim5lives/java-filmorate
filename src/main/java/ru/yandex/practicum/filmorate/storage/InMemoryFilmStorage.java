@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validators.FilmValidator.isFilmInfoValid;
 
@@ -85,4 +86,19 @@ public class InMemoryFilmStorage implements FilmStorage {
         return ++id;
     }
 
+    @Override
+    public List<Film> getFilmsByDirector(String sortBy, Integer directorId) {
+        List<Film> films = getAllFilms().stream()
+                .filter(film -> film.getDirectors().stream()
+                        .anyMatch(director -> director.getId().equals(directorId)))
+                .collect(Collectors.toList());
+
+        if ("likes".equalsIgnoreCase(sortBy)) {
+            films.sort((f1, f2) -> f2.getLikes().size() - f1.getLikes().size());
+        } else if ("releaseDate".equalsIgnoreCase(sortBy)) {
+            films.sort((f1, f2) -> f2.getReleaseDate().compareTo(f1.getReleaseDate()));
+        }
+
+        return films;
+    }
 }

@@ -205,4 +205,21 @@ public class FilmServiceImpl implements FilmService {
         log.info("Пользователь id={} убрал лайк с фильма id={}", user.getId(), filmId);
         return FilmMapper.mapToFilmDto(film);
     }
+
+    @Override
+    public List<FilmDto> getFilmsByDirector(String sortBy, Integer directorId) {
+        if (directorId != null) {
+            boolean directorExists = directorStorage.getAllDirectors().stream()
+                    .map(Director::getId)
+                    .anyMatch(id -> id.equals(directorId));
+            if (!directorExists) {
+                throw new ValidationException("Не существует режиссера с ID: " + directorId);
+            }
+        }
+
+        log.info("Выводится список фильмов режиссера отсортированных по количеству лайков или году выпуска");
+        return filmStorage.getFilmsByDirector(sortBy, directorId).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
+    }
 }

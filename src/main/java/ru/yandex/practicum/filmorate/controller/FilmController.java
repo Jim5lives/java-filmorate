@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -62,5 +64,13 @@ public class FilmController {
                               @PathVariable Integer userId) {
         log.info("Получен запрос на удаление лайка у фильма с id={} от пользователя с id={}", filmId, userId);
         return filmService.deleteLike(filmId, userId);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<FilmDto> getFilmsByDirector(@RequestParam String sortBy, @PathVariable int directorId) {
+        if (!(sortBy.equals("year") || sortBy.equals("likes"))) {
+            throw new NotFoundException("Неправильно выбран параметр sortBy");
+        }
+        return filmService.getFilmsByDirector(sortBy, directorId);
     }
 }

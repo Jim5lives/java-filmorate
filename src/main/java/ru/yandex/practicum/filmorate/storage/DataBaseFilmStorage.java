@@ -50,6 +50,45 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                     "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
                     "LEFT JOIN director d ON fd.director_id = d.id ";
 
+    private static final String FIND_FILM_DIRECTORS_BY_YEAR =
+            "SELECT  f.*, " +
+                    "EXTRACT(YEAR FROM f.release_date) AS release_year, " +
+                    "m.name AS mpa_name, " +
+                    "fg.genre_id AS genres_id, " +
+                    "g.name AS genre_name, " +
+                    "fl.user_id AS likes_id, " +
+                    "fd.director_id AS directors_id, " +
+                    "d.name AS director_name " +
+                    "FROM film f " +
+                    "LEFT JOIN mpa m ON f.mpa_id = m.id " +
+                    "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+                    "LEFT JOIN genre g ON fg.genre_id = g.id " +
+                    "LEFT JOIN film_likes fl ON f.id = fl.film_id " +
+                    "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
+                    "LEFT JOIN director d ON fd.director_id = d.id " +
+                    "WHERE d.id = ? " +
+                    "ORDER BY f.release_date ";
+
+    private static final String FIND_FILM_DIRECTORS_BY_LIKES =
+            "SELECT  f.*, " +
+                    "COUNT(fl.user_id) AS cnt, " +
+                    "m.name AS mpa_name, " +
+                    "fg.genre_id AS genres_id, " +
+                    "g.name AS genre_name, " +
+                    "fl.user_id AS likes_id, " +
+                    "fd.director_id AS directors_id, " +
+                    "d.name AS director_name " +
+                    "FROM film f " +
+                    "LEFT JOIN mpa m ON f.mpa_id = m.id " +
+                    "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+                    "LEFT JOIN genre g ON fg.genre_id = g.id " +
+                    "LEFT JOIN film_likes fl ON f.id = fl.film_id " +
+                    "LEFT JOIN film_directors fd ON f.id = fd.film_id " +
+                    "LEFT JOIN director d ON fd.director_id = d.id " +
+                    "WHERE d.id = ? " +
+                    "GROUP BY f.id, fl.user_id " +
+                    "ORDER BY cnt DESC ";
+
     private static final String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, release_date = ?, " +
             "duration = ? WHERE id = ?";
     private static final String ADD_LIKE_QUERY = "INSERT INTO film_likes (film_id, user_id) VALUES (?, ?)";
@@ -141,5 +180,23 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                 .limit(count)
                 .toList();
         return films.reversed();
+    }
+
+    @Override
+    public List<Film> getFilmsByDirector(String sortBy, Integer directorId) {
+        if (sortBy.equalsIgnoreCase("year")) {
+            return getDirectorFilmsByYear(directorId);
+        }
+        return getDirectorFilmsByLikes(directorId);
+    }
+
+    private List<Film> getDirectorFilmsByYear(Integer directorId) {
+        findManyExtractor(FIND_FILM_DIRECTORS_BY_YEAR, directorId);
+        return findManyExtractor(FIND_FILM_DIRECTORS_BY_YEAR, directorId);
+    }
+
+    private List<Film> getDirectorFilmsByLikes(Integer directorId) {
+        findManyExtractor(FIND_FILM_DIRECTORS_BY_LIKES, directorId);
+        return findManyExtractor(FIND_FILM_DIRECTORS_BY_LIKES, directorId);
     }
 }
