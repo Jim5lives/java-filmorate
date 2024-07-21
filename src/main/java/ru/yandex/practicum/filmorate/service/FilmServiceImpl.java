@@ -222,4 +222,17 @@ public class FilmServiceImpl implements FilmService {
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
     }
+
+    @Override
+    public Collection<FilmDto> getCommonFilms(Integer userId, Integer friendId) {
+        userStorage.findUserById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + userId));
+        userStorage.findUserById(friendId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + friendId));
+
+        return filmStorage.getCommonFilms(userId, friendId)
+                .stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
+    }
 }
