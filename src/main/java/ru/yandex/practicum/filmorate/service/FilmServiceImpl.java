@@ -38,6 +38,11 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Collection<FilmDto> getAllFilms() {
+        try {
+            filmStorage.getAllFilms();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return filmStorage.getAllFilms().stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
@@ -140,6 +145,16 @@ public class FilmServiceImpl implements FilmService {
             throw exception;
         }
         updatedFilm = filmStorage.updateFilm(updatedFilm);
+
+        if (request.getDirectors() != null && !request.getDirectors().isEmpty()) {
+            Set<Director> directors = updatedFilm.getDirectors().stream()
+                    .map(Director::getId)
+                    .map(directorStorage::findDirectorById)
+                    .flatMap(Optional::stream)
+                    .collect(Collectors.toSet());
+            updatedFilm.setDirectors(directors);
+        }
+
         log.info("Обновленный фильм {} сохранен", updatedFilm);
         return FilmMapper.mapToFilmDto(updatedFilm);
     }

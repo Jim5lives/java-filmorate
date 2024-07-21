@@ -86,6 +86,10 @@ public final class FilmMapper {
             film.setDuration(request.getDuration());
         }
 
+        if (request.hasDirectors()) {
+            film.setDirectors(request.getDirectors());
+        }
+
         return film;
     }
 }
