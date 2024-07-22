@@ -3,12 +3,16 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.EventDto;
 import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.mappers.EventMapper;
 import ru.yandex.practicum.filmorate.mappers.UserMapper;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -105,6 +109,9 @@ public class UserServiceImpl implements UserService {
 
         user.addUserIdToFriendsList(friendId);
         log.info("Пользователь id={} добавился в друзья к пользователю id={}", userId, friendId);
+
+        userStorage.addEvent(user.getId(), friend.getId(), EventType.FRIEND, OperationType.ADD);
+
         return UserMapper.mapToUserDto(user);
     }
 
@@ -121,6 +128,7 @@ public class UserServiceImpl implements UserService {
         user.deleteUserIdFromFriendsList(friendId);
         friend.deleteUserIdFromFriendsList(userId);
         log.info("Пользователь id={} удален из друзей пользователя id={}", userId, friendId);
+        userStorage.addEvent(user.getId(), friend.getId(), EventType.FRIEND, OperationType.REMOVE);
         return UserMapper.mapToUserDto(user);
     }
 
@@ -136,8 +144,15 @@ public class UserServiceImpl implements UserService {
 
         List<UserDto> mutualFriends = new ArrayList<>(user1Friends);
         mutualFriends.retainAll(user2Friends);
-        log.info("Выводится список общих друзей полхователей id={} и id={}", userId, otherId);
+        log.info("Выводится список общих друзей пользователей id={} и id={}", userId, otherId);
         return mutualFriends;
+    }
+
+    @Override
+    public Collection<EventDto> getFeed(Integer userId) {
+        User user = userStorage.findUserById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID: " + userId + " не найден."));
+        return userStorage.getFeed(user.getId()).stream().map(EventMapper::mapToDto).toList();
     }
 
 }
