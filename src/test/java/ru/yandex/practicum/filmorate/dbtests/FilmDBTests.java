@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -30,9 +31,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @ContextConfiguration(classes = {UserStorage.class, DataBaseUserStorage.class, UserResultSetExtractor.class,
         UserListResultSetExtractor.class, UserService.class, FilmService.class, DataBaseGenreStorage.class,
-        FilmResultSetExtractor.class, FilmListResultSetExtractor.class, FilmServiceImpl.class, GenreRowMapper.class,
-        MpaRowMapper.class, FilmStorage.class, DataBaseFilmStorage.class, MpaStorage.class, MpaService.class,
-        MpaServiceImpl.class, DataBaseMpaStorage.class, MpaRowMapper.class})
+        DataBaseDirectorStorage.class, FilmResultSetExtractor.class, FilmListResultSetExtractor.class,
+        FilmServiceImpl.class, GenreRowMapper.class, DirectorRowMapper.class, MpaRowMapper.class, FilmStorage.class,
+        DataBaseFilmStorage.class, MpaStorage.class, MpaService.class, MpaServiceImpl.class,
+        DataBaseMpaStorage.class, MpaRowMapper.class})
 class FilmDBTests {
     private final DataBaseFilmStorage filmStorage;
 
@@ -41,6 +43,8 @@ class FilmDBTests {
         Mpa mpa = new Mpa();
         mpa.setId(1);
         Set<Genre> genres = new HashSet<>();
+        Set<Director> directors = new HashSet<>();
+
         Film film = new Film();
         film.setName("Test0");
         film.setDescription("testDescription0");
@@ -48,6 +52,7 @@ class FilmDBTests {
         film.setReleaseDate(LocalDate.of(1994, 10, 10));
         film.setMpa(mpa);
         film.setGenres(genres);
+        film.setDirectors(directors);
         film = filmStorage.createFilm(film);
 
         Optional<Film> filmOptional = filmStorage.findFilmById(film.getId());
@@ -73,6 +78,10 @@ class FilmDBTests {
         genre.setId(1);
         Set<Genre> genres = new HashSet<>();
         genres.add(genre);
+        Director director = new Director();
+        director.setId(null);
+        Set<Director> directors = new HashSet<>();
+        directors.add(director);
         Film film = new Film();
         film.setName("Test3");
         film.setDescription("testDescription3");
@@ -80,6 +89,7 @@ class FilmDBTests {
         film.setReleaseDate(LocalDate.of(1994, 10, 10));
         film.setMpa(mpa);
         film.setGenres(genres);
+        film.setDirectors(directors);
 
         film = filmStorage.createFilm(film);
 
@@ -94,6 +104,10 @@ class FilmDBTests {
         genre.setId(1);
         Set<Genre> genres = new HashSet<>();
         genres.add(genre);
+        Director director = new Director();
+        director.setId(null);
+        Set<Director> directors = new HashSet<>();
+        directors.add(director);
         Film film = new Film();
         film.setName("Test3");
         film.setDescription("testDescription3");
@@ -101,14 +115,21 @@ class FilmDBTests {
         film.setReleaseDate(LocalDate.of(1994, 10, 10));
         film.setMpa(mpa);
         film.setGenres(genres);
+        film.setDirectors(directors);
+
         film = filmStorage.createFilm(film);
 
+        Director updateDirector = new Director();
+        director.setId(1);
+        Set<Director> updirectors = new HashSet<>();
+        updirectors.add(updateDirector);
         Film filmUpdated = new Film();
         filmUpdated.setId(film.getId());
         filmUpdated.setName("updated");
         filmUpdated.setDescription("updatedDescription3");
         filmUpdated.setDuration(Duration.ofMinutes(33));
         filmUpdated.setReleaseDate(LocalDate.of(1994, 10, 13));
+        filmUpdated.setDirectors(updirectors);
 
         Film result = filmStorage.updateFilm(filmUpdated);
 
