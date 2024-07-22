@@ -8,10 +8,10 @@ import java.sql.Timestamp;
 @Data
 @Builder
 public class Event {
-    int id;
-    int userId;
-    int entityId;
-    Timestamp timestamp;
-    String eventType;
-    String operation;
+    private int id;
+    private int userId;
+    private int entityId;
+    private Timestamp timestamp;
+    private String eventType;
+    private String operation;
 }
