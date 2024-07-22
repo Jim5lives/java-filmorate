@@ -4,13 +4,11 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
-
-import ru.yandex.practicum.filmorate.model.Mpa;
-
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
