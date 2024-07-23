@@ -89,4 +89,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     private Integer getNextFilmId() {
         return ++id;
     }
+
+    @Override
+    public void deleteFilmById(int id) {
+        if (films.containsKey(id)) {
+            films.remove(id);
+        } else {
+            throw new NotFoundException("Фильм не найден");
+        }
+    }
 }

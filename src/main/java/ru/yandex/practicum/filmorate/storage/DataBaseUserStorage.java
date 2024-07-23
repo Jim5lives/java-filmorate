@@ -26,6 +26,10 @@ public class DataBaseUserStorage extends BaseStorage<User> implements UserStorag
             + " f2 ON au.id = f2.user_id WHERE f.user_id = ?";
     private static final String ADD_FRIEND_QUERY = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
+    private static final String DELETE_USER_QUERY = "DELETE FROM app_user WHERE id = ?";
+    private static final String DELETE_USER_LIKES_QUERY = "DELETE FROM film_likes WHERE user_id = ?";
+    private static final String DELETE_USER_FRIENDS_QUERY = "DELETE FROM friends WHERE user_id = ?";
+
 
     public DataBaseUserStorage(JdbcTemplate jdbc, ResultSetExtractor<List<User>> listExtractor) {
         super(listExtractor, jdbc);
@@ -91,5 +95,12 @@ public class DataBaseUserStorage extends BaseStorage<User> implements UserStorag
         Optional<User> friendOpt = findOneExtractor(checkIfAlreadyFriend, userId, friendId);
 
         return friendOpt.isPresent();
+    }
+
+    @Override
+    public void deleteUserById(int id) {
+        delete(DELETE_USER_QUERY, id);
+        delete(DELETE_USER_LIKES_QUERY, id);
+        delete(DELETE_USER_FRIENDS_QUERY, id);
     }
 }

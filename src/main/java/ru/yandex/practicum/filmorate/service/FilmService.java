@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
+
 import java.util.Collection;
 
 public interface FilmService {
@@ -15,11 +16,13 @@ public interface FilmService {
 
     FilmDto updateFilm(UpdateFilmRequest updatedFilm);
 
-    Collection<FilmDto> getPopularFilms(int count,Integer year, Integer genreId);
+    Collection<FilmDto> getPopularFilms(int count, Integer year, Integer genreId);
 
     FilmDto addLike(Integer filmId, Integer userId);
 
     FilmDto deleteLike(Integer filmId, Integer userId);
 
     Collection<FilmDto> getCommonFilms(Integer userId, Integer friendId);
+
+    void deleteFilmById(int id);
 }

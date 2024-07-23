@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
+
 import java.util.Collection;
 
 @RestController
@@ -48,22 +49,28 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public UserDto addToFriends(@PathVariable("id") Integer userId,
-                             @PathVariable Integer friendId) {
+                                @PathVariable Integer friendId) {
         log.info("Получен запрос на добавление в друзья ползователю id={} от пользователя id={}", userId, friendId);
         return userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public UserDto deleteFromFriends(@PathVariable("id") Integer userId,
-                                  @PathVariable Integer friendId) {
+                                     @PathVariable Integer friendId) {
         log.info("Получен запрос на удаление из друзей пользователя id={} пользователя id={}", userId, friendId);
         return userService.deleteFriend(userId, friendId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public Collection<UserDto> getMutualFriends(@PathVariable("id") Integer userId,
-                                             @PathVariable Integer otherId) {
+                                                @PathVariable Integer otherId) {
         log.info("Получен запрос вывод общих друзей пользователей id={} и id={}", userId, otherId);
         return userService.getMutualFriends(userId, otherId);
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteUserById(@PathVariable Integer id) {
+        log.info("Получен запрос на удаление пользователя id={}", id);
+        userService.deleteUserById(id);
     }
 }

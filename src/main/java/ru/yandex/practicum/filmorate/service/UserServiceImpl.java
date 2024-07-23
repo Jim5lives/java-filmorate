@@ -12,7 +12,10 @@ import ru.yandex.practicum.filmorate.mappers.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validators.UserValidator.isUserInfoValid;
@@ -140,4 +143,10 @@ public class UserServiceImpl implements UserService {
         return mutualFriends;
     }
 
+    @Override
+    public void deleteUserById(int id) {
+        userStorage.findUserById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + id));
+        userStorage.deleteUserById(id);
+    }
 }
