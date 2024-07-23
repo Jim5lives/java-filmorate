@@ -6,14 +6,12 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.mappers.DirectorMapper;
 import ru.yandex.practicum.filmorate.mappers.FilmMapper;
 import ru.yandex.practicum.filmorate.mappers.GenreMapper;
 import ru.yandex.practicum.filmorate.mappers.MpaMapper;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +26,8 @@ public class FilmServiceImpl implements FilmService {
     private final UserStorage userStorage;
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
+    private final DirectorStorage directorStorage;
+
 
     @Override
     public FilmDto findFilmById(Integer id) {
@@ -38,6 +38,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Collection<FilmDto> getAllFilms() {
+        filmStorage.getAllFilms();
         return filmStorage.getAllFilms().stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
@@ -68,6 +69,17 @@ public class FilmServiceImpl implements FilmService {
         } else {
             film.setGenres(new HashSet<>());
         }
+        if (request.getDirectors() != null) {
+            List<Integer> directorIds = film.getDirectors().stream()
+                    .map(Director::getId)
+                    .toList();
+            for (Integer id : directorIds) {
+                directorStorage.findDirectorById(id)
+                        .orElseThrow(() -> new ValidationException("Не существует режиссера с ID:" + id));
+            }
+        } else {
+            film.setDirectors(new HashSet<>());
+        }
         film = filmStorage.createFilm(film);
 
         // маппинг
@@ -85,6 +97,18 @@ public class FilmServiceImpl implements FilmService {
             filmDto.setGenres(genres);
         } else {
             filmDto.setGenres(new HashSet<>());
+        }
+
+        if (request.getDirectors() != null && !request.getDirectors().isEmpty()) {
+            Set<DirectorDto> directors = film.getDirectors().stream()
+                    .map(Director::getId)
+                    .map(directorStorage::findDirectorById)
+                    .flatMap(Optional::stream)
+                    .map(DirectorMapper::mapToDirectorDto)
+                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(DirectorDto::getId))));
+            filmDto.setDirectors(directors);
+        } else {
+            filmDto.setDirectors(new HashSet<>());
         }
 
         log.info("Фильм создан: {}", filmDto);
@@ -114,6 +138,16 @@ public class FilmServiceImpl implements FilmService {
             throw exception;
         }
         updatedFilm = filmStorage.updateFilm(updatedFilm);
+
+        if (request.getDirectors() != null && !request.getDirectors().isEmpty()) {
+            Set<Director> directors = updatedFilm.getDirectors().stream()
+                    .map(Director::getId)
+                    .map(directorStorage::findDirectorById)
+                    .flatMap(Optional::stream)
+                    .collect(Collectors.toSet());
+            updatedFilm.setDirectors(directors);
+        }
+
         log.info("Обновленный фильм {} сохранен", updatedFilm);
         return FilmMapper.mapToFilmDto(updatedFilm);
     }
@@ -169,6 +203,23 @@ public class FilmServiceImpl implements FilmService {
         userStorage.addEvent(user.getId(), film.getId(), EventType.LIKE, OperationType.REMOVE);
 
         return FilmMapper.mapToFilmDto(film);
+    }
+
+    @Override
+    public List<FilmDto> getFilmsByDirector(String sortBy, Integer directorId) {
+        if (directorId != null) {
+            boolean directorExists = directorStorage.getAllDirectors().stream()
+                    .map(Director::getId)
+                    .anyMatch(id -> id.equals(directorId));
+            if (!directorExists) {
+                throw new ValidationException("Не существует режиссера с ID: " + directorId);
+            }
+        }
+
+        log.info("Выводится список фильмов режиссера отсортированных по количеству лайков или году выпуска");
+        return filmStorage.getFilmsByDirector(sortBy, directorId).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
     }
 
     @Override

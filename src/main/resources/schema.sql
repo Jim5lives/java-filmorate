@@ -37,6 +37,17 @@ CREATE TABLE IF NOT EXISTS film_genres (
     genre_id INTEGER REFERENCES genre(id)
 );
 
+CREATE TABLE IF NOT EXISTS director (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS film_directors (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    film_id INTEGER REFERENCES film(id),
+    director_id INTEGER REFERENCES director(id)
+);
+
 CREATE TABLE IF NOT EXISTS friends (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     user_id INTEGER REFERENCES app_user(id),
@@ -66,4 +77,3 @@ CREATE TABLE IF NOT EXISTS events (
     type ENUM('REVIEW', 'FRIEND', 'LIKE'),
     entity_id INTEGER
 );
-
