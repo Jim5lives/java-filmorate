@@ -37,15 +37,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewDto createReview(NewReviewRequest request) {
-
-        Film film = filmStorage.findFilmById(request.getFilmId()).orElseThrow(() -> new NotFoundException("Couldn't add review to unexisting film with id = " + request.getFilmId()));
-        User user = userStorage.findUserById(request.getUserId()).orElseThrow(() -> new NotFoundException("Couldn't add review from unexisting user with id = " + request.getUserId()));
-
         Film film = filmStorage.findFilmById(request.getFilmId()).orElseThrow(() ->
                 new NotFoundException("Couldn't add review to unexisting film with id = " + request.getFilmId()));
         User user = userStorage.findUserById(request.getUserId()).orElseThrow(() ->
                 new NotFoundException("Couldn't add review from unexisting user with id = " + request.getUserId()));
-
         Review review = reviewStorage.createReview(ReviewMapper.mapToReview(request));
 
         userStorage.addEvent(user.getId(), review.getId(), EventType.REVIEW, OperationType.ADD);
@@ -55,11 +50,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewDto updateReview(UpdatedReviewRequest request) {
-
-        Film film = filmStorage.findFilmById(request.getFilmId()).orElseThrow(() -> new NotFoundException("Couldn't update review to unexisting film with id = " + request.getFilmId()));
-        User user = userStorage.findUserById(request.getUserId()).orElseThrow(() -> new NotFoundException("Couldn't update review from unexisting user with id = " + request.getUserId()));
-        Review review = reviewStorage.getReviewById(request.getReviewId()).orElseThrow(() -> new NotFoundException("Couldn't update unexisting review with id = " + request.getReviewId()));
-
         Film film = filmStorage.findFilmById(request.getFilmId()).orElseThrow(() ->
                 new NotFoundException("Couldn't update review to unexisting film with id = " + request.getFilmId()));
         User user = userStorage.findUserById(request.getUserId()).orElseThrow(() ->
@@ -71,6 +61,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         return ReviewMapper.mapToDto(reviewStorage.updateReview(ReviewMapper.mapToReview(request)));
     }
+
 
     @Override
     public void deleteReview(int id) {

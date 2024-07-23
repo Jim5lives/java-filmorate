@@ -89,7 +89,6 @@ public class UserServiceImpl implements UserService {
         return UserMapper.mapToUserDto(updatedUser);
     }
 
-
     @Override
     public Collection<UserDto> getAllFriends(Integer id) {
         User selectedUser = userStorage.findUserById(id)

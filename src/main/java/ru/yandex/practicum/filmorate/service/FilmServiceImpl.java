@@ -11,10 +11,7 @@ import ru.yandex.practicum.filmorate.mappers.FilmMapper;
 import ru.yandex.practicum.filmorate.mappers.GenreMapper;
 import ru.yandex.practicum.filmorate.mappers.MpaMapper;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,11 +38,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Collection<FilmDto> getAllFilms() {
-        try {
-            filmStorage.getAllFilms();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        filmStorage.getAllFilms();
         return filmStorage.getAllFilms().stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
@@ -87,11 +80,8 @@ public class FilmServiceImpl implements FilmService {
         } else {
             film.setDirectors(new HashSet<>());
         }
-        try {
-            film = filmStorage.createFilm(film);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        film = filmStorage.createFilm(film);
+
         // маппинг
         FilmDto filmDto = FilmMapper.mapToFilmDto(film);
 
