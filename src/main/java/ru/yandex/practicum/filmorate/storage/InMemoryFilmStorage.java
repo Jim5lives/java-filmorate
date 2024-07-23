@@ -89,7 +89,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> search(String query, String by) {
-        return List.of();
+        throw new UnsupportedOperationException();
     }
 
     private Integer getNextFilmId() {

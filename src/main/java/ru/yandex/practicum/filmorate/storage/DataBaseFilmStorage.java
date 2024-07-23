@@ -220,21 +220,20 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
 
     @Override
     public Collection<Film> search(String query, String by) {
+        StringBuilder sb = new StringBuilder(FIND_ALL_QUERY);
         query = "%" + query + "%";
-        String resultQuery = FIND_ALL_QUERY;
 
         if (by.contains("title") && by.contains("director")) {
-            resultQuery += " WHERE f.name LIKE ? " +
-                    "OR d.name LIKE ?";
-           return findManyExtractor(resultQuery, query, query);
+            sb.append(" WHERE f.name LIKE ? OR d.name LIKE ?");
+            return findManyExtractor(sb.toString(), query, query);
 
         } else if (by.contains("title")) {
-            resultQuery += " WHERE f.name LIKE ?";
-            return findManyExtractor(resultQuery, query);
+            sb.append(" WHERE f.name LIKE ?");
+            return findManyExtractor(sb.toString(), query);
 
         } else if (by.contains("director")) {
-            resultQuery += " WHERE d.name LIKE ?";
-            return findManyExtractor(resultQuery, query);
+            sb.append(" WHERE d.name LIKE ?");
+            return findManyExtractor(sb.toString(), query);
 
         } else {
             throw new ValidationException("Некорректные параметры запроса");
