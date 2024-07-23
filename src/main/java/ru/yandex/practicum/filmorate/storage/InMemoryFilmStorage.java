@@ -111,4 +111,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
         return films;
     }
+
+    @Override
+    public Collection<Film> getLikedFilmsUser(Integer userId) {
+        throw new UnsupportedOperationException();
+    }
 }

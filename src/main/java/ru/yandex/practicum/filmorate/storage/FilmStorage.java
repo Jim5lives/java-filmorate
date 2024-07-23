@@ -28,4 +28,6 @@ public interface FilmStorage {
 
     Collection<Film> search(String query, String by);
 
+    Collection<Film> getLikedFilmsUser(Integer userId);
+
 }
