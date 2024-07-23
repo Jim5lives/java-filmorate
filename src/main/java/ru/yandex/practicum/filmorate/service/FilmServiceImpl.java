@@ -234,4 +234,13 @@ public class FilmServiceImpl implements FilmService {
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
     }
+
+    @Override
+    public Collection<FilmDto> search(String query, String by) {
+        Collection<Film> films = filmStorage.search(query, by);
+        log.info("Выводится список фильмов, содержащих {} по {}", query, by);
+        return films.stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(FilmDto::getId))));
+    }
 }

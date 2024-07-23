@@ -84,7 +84,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId) {
-        return null;
+        return List.of();
+    }
+
+    @Override
+    public Collection<Film> search(String query, String by) {
+        throw new UnsupportedOperationException();
     }
 
     private Integer getNextFilmId() {
