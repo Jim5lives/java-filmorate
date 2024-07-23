@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -78,5 +77,12 @@ public class FilmController {
     public Collection<FilmDto> getCommonFilms(@RequestParam Integer userId, @RequestParam Integer friendId) {
         log.info("Получен запрос на вывод общих фильмов у пользователя id={} и пользователя с id={}", userId, friendId);
         return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public Collection<FilmDto> search(@RequestParam String query,
+                                      @RequestParam String by) {
+        log.info("Получен запрос на поиск фильмов по подстроке {}", query);
+        return filmService.search(query, by);
     }
 }

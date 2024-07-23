@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -111,6 +112,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
         super(listExtractor, jdbc);
     }
 
+
     @Override
     public Collection<Film> getAllFilms() {
         findManyExtractor(FIND_ALL_QUERY);
@@ -121,6 +123,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     public Optional<Film> findFilmById(Integer id) {
         return findOneExtractor(FIND_BY_ID_QUERY, id);
     }
+
 
     @Override
     public Film createFilm(Film film) {
@@ -213,5 +216,28 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     @Override
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId) {
         return findManyExtractor(FIND_COMMON_FILMS_QUERY, userId, friendId);
+    }
+
+    @Override
+    public Collection<Film> search(String query, String by) {
+        query = "%" + query + "%";
+        String resultQuery = FIND_ALL_QUERY;
+
+        if (by.contains("title") && by.contains("director")) {
+            resultQuery += " WHERE f.name LIKE ? " +
+                    "OR d.name LIKE ?";
+           return findManyExtractor(resultQuery, query, query);
+
+        } else if (by.contains("title")) {
+            resultQuery += " WHERE f.name LIKE ?";
+            return findManyExtractor(resultQuery, query);
+
+        } else if (by.contains("director")) {
+            resultQuery += " WHERE d.name LIKE ?";
+            return findManyExtractor(resultQuery, query);
+
+        } else {
+            throw new ValidationException("Некорректные параметры запроса");
+        }
     }
 }
