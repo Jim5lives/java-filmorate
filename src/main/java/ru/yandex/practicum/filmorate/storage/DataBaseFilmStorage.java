@@ -51,7 +51,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     private static final String DELETE_FILM_QUERY = "DELETE FROM film WHERE id = ?";
     private static final String DELETE_FILM_LIKE_QUERY = "DELETE FROM film_likes WHERE film_id = ?";
     private static final String DELETE_FILM_GENRE_QUERY = "DELETE FROM film_genres WHERE film_id = ?";
-    private static final String DELETE_FILM_DIRECTOR_QUERY = "DELETE FROM film_director WHERE film_id = ?";
+    private static final String DELETE_FILM_DIRECTOR_QUERY = "DELETE FROM film_directors WHERE film_id = ?";
 
 
     private static final String FIND_COMMON_FILMS_QUERY = "WITH common_films_id as (" +

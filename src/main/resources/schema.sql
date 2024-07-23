@@ -57,3 +57,14 @@ CREATE TABLE IF NOT EXISTS review_likes_dislikes (
     like_dislike INTEGER,
     PRIMARY KEY (user_id, review_id)
 );
+
+CREATE TABLE IF NOT EXISTS director (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS film_directors (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    film_id INTEGER REFERENCES film(id),
+    director_id INTEGER REFERENCES director(id)
+);

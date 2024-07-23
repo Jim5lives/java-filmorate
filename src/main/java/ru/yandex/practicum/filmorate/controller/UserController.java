@@ -68,7 +68,7 @@ public class UserController {
         return userService.getMutualFriends(userId, otherId);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable Integer id) {
         log.info("Получен запрос на удаление пользователя id={}", id);
         userService.deleteUserById(id);
