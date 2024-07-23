@@ -11,7 +11,10 @@ import ru.yandex.practicum.filmorate.mappers.FilmMapper;
 import ru.yandex.practicum.filmorate.mappers.GenreMapper;
 import ru.yandex.practicum.filmorate.mappers.MpaMapper;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.storage.*;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -187,6 +190,9 @@ public class FilmServiceImpl implements FilmService {
         Film updatedLikesFilm = filmStorage.findFilmById(film.getId())
                 .orElseThrow(() -> new NotFoundException("Не найден фильм с ID:"));
         log.info("Пользователь id={} поставил лайк фильму id={}", userId, updatedLikesFilm.getId());
+
+        userStorage.addEvent(user.getId(), film.getId(), EventType.LIKE, OperationType.ADD);
+
         return FilmMapper.mapToFilmDto(updatedLikesFilm);
     }
 
@@ -203,6 +209,9 @@ public class FilmServiceImpl implements FilmService {
         }
         filmStorage.deleteLike(film, userId);
         log.info("Пользователь id={} убрал лайк с фильма id={}", user.getId(), filmId);
+
+        userStorage.addEvent(user.getId(), film.getId(), EventType.LIKE, OperationType.REMOVE);
+
         return FilmMapper.mapToFilmDto(film);
     }
 

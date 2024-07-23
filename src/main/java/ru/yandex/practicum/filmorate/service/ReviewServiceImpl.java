@@ -9,9 +9,7 @@ import ru.yandex.practicum.filmorate.dto.UpdatedReviewRequest;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.mappers.ReviewMapper;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -42,15 +40,35 @@ public class ReviewServiceImpl implements ReviewService {
 
         Film film = filmStorage.findFilmById(request.getFilmId()).orElseThrow(() -> new NotFoundException("Couldn't add review to unexisting film with id = " + request.getFilmId()));
         User user = userStorage.findUserById(request.getUserId()).orElseThrow(() -> new NotFoundException("Couldn't add review from unexisting user with id = " + request.getUserId()));
+
+        Film film = filmStorage.findFilmById(request.getFilmId()).orElseThrow(() ->
+                new NotFoundException("Couldn't add review to unexisting film with id = " + request.getFilmId()));
+        User user = userStorage.findUserById(request.getUserId()).orElseThrow(() ->
+                new NotFoundException("Couldn't add review from unexisting user with id = " + request.getUserId()));
+
         Review review = reviewStorage.createReview(ReviewMapper.mapToReview(request));
+
+        userStorage.addEvent(user.getId(), review.getId(), EventType.REVIEW, OperationType.ADD);
+
         return ReviewMapper.mapToDto(review);
     }
 
     @Override
     public ReviewDto updateReview(UpdatedReviewRequest request) {
+
         Film film = filmStorage.findFilmById(request.getFilmId()).orElseThrow(() -> new NotFoundException("Couldn't update review to unexisting film with id = " + request.getFilmId()));
         User user = userStorage.findUserById(request.getUserId()).orElseThrow(() -> new NotFoundException("Couldn't update review from unexisting user with id = " + request.getUserId()));
         Review review = reviewStorage.getReviewById(request.getReviewId()).orElseThrow(() -> new NotFoundException("Couldn't update unexisting review with id = " + request.getReviewId()));
+
+        Film film = filmStorage.findFilmById(request.getFilmId()).orElseThrow(() ->
+                new NotFoundException("Couldn't update review to unexisting film with id = " + request.getFilmId()));
+        User user = userStorage.findUserById(request.getUserId()).orElseThrow(() ->
+                new NotFoundException("Couldn't update review from unexisting user with id = " + request.getUserId()));
+        Review review = reviewStorage.getReviewById(request.getReviewId()).orElseThrow(() ->
+                new NotFoundException("Couldn't update unexisting review with id = " + request.getReviewId()));
+
+        userStorage.addEvent(user.getId(), review.getId(), EventType.REVIEW, OperationType.UPDATE);
+
         return ReviewMapper.mapToDto(reviewStorage.updateReview(ReviewMapper.mapToReview(request)));
     }
 
@@ -58,6 +76,9 @@ public class ReviewServiceImpl implements ReviewService {
     public void deleteReview(int id) {
         Review review = reviewStorage.getReviewById(id).orElseThrow(() -> new ValidationException("Couldn't delete unexisting review with id = " + id));
         reviewStorage.deleteReview(id);
+
+        userStorage.addEvent(review.getUserId(), review.getId(), EventType.REVIEW, OperationType.REMOVE);
+
     }
 
     @Override

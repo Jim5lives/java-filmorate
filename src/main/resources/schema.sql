@@ -69,3 +69,11 @@ CREATE TABLE IF NOT EXISTS review_likes_dislikes (
     PRIMARY KEY (user_id, review_id)
 );
 
+CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    e_timestamp TIMESTAMP,
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE,
+    operation ENUM('ADD', 'UPDATE', 'REMOVE'),
+    type ENUM('REVIEW', 'FRIEND', 'LIKE'),
+    entity_id INTEGER
+);
