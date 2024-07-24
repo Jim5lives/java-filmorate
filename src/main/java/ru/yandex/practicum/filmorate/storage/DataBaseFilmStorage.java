@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -227,7 +228,9 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
 
     private List<Film> getDirectorFilmsByYear(Integer directorId) {
         findManyExtractor(FIND_FILM_DIRECTORS_BY_YEAR, directorId);
-        return findManyExtractor(FIND_FILM_DIRECTORS_BY_YEAR, directorId);
+        return findManyExtractor(FIND_FILM_DIRECTORS_BY_YEAR, directorId).stream()
+                .sorted(Comparator.comparing(Film::getReleaseDate))
+                .toList();
     }
 
     private List<Film> getDirectorFilmsByLikes(Integer directorId) {
