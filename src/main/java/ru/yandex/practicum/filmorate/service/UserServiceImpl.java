@@ -7,13 +7,16 @@ import ru.yandex.practicum.filmorate.dto.EventDto;
 import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.mappers.EventMapper;
+import ru.yandex.practicum.filmorate.mappers.FilmMapper;
 import ru.yandex.practicum.filmorate.mappers.UserMapper;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import static ru.yandex.practicum.filmorate.validators.UserValidator.isUserInfoV
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     @Override
     public UserDto findUserById(Integer id) {
@@ -155,6 +159,14 @@ public class UserServiceImpl implements UserService {
         User user = userStorage.findUserById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID: " + userId + " не найден."));
         return userStorage.getFeed(user.getId()).stream().map(EventMapper::mapToDto).toList();
+    }
+
+    @Override
+    public Collection<FilmDto> getRecommendations(Integer id) {
+        userStorage.findUserById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + id));
+
+        return filmStorage.getLikedFilmsUser(id).stream().map(FilmMapper::mapToFilmDto).toList();
     }
 
 }

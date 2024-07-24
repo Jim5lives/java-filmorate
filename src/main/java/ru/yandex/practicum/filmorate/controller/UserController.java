@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.dto.EventDto;
 import ru.yandex.practicum.filmorate.dto.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
@@ -73,5 +74,11 @@ public class UserController {
     public Collection<EventDto> getFeed(@PathVariable Integer id) {
         log.info("Получен запрос на вывод ленты событий для пользователя с id={}", id);
         return userService.getFeed(id);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public Collection<FilmDto> getRecommendations(@PathVariable Integer id) {
+        log.info("Получен запрос вывод рекомендаций пользователя id={}", id);
+        return userService.getRecommendations(id);
     }
 }

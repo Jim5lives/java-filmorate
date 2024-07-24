@@ -108,6 +108,14 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
             FIND_ALL_QUERY +
             " WHERE f.id in (SELECT film_id FROM common_films_id)";
 
+    private static final String FIND_LIKED_FILM_USER_QUERY = "WITH likedFilm AS (SELECT fl3.film_id FROM film_likes fl " +
+            "JOIN FILM_LIKES fl2 ON fl2.film_id  = fl.film_id " +
+            "JOIN FILM_LIKES fl3 ON fl3.user_id = fl2.user_id " +
+            "WHERE fl.user_id = ? AND fl2.user_id != ?" +
+            "AND fl3.film_id NOT IN (SELECT film_id FROM film_likes WHERE user_id = ? )) " +
+            FIND_ALL_QUERY +
+            " WHERE f.id in (SELECT film_id FROM likedFilm)";
+
     public DataBaseFilmStorage(JdbcTemplate jdbc, ResultSetExtractor<List<Film>> listExtractor) {
         super(listExtractor, jdbc);
     }
@@ -238,5 +246,10 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
         } else {
             throw new ValidationException("Некорректные параметры запроса");
         }
+    }
+
+    @Override
+    public Collection<Film> getLikedFilmsUser(Integer userId) {
+        return findManyExtractor(FIND_LIKED_FILM_USER_QUERY, userId, userId, userId);
     }
 }
