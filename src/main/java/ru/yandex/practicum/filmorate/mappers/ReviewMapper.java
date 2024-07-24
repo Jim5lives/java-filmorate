@@ -24,13 +24,10 @@ public class ReviewMapper {
                 .isPositive(request.getIsPositive()).build();
     }
 
-    public static Review mapToReview(UpdatedReviewRequest request) {
-        return Review.builder()
-                .id(request.getReviewId())
-                .userId(request.getUserId())
-                .filmId(request.getFilmId())
-                .content(request.getContent())
-                .isPositive(request.getIsPositive()).build();
+    public static Review mapToReview(UpdatedReviewRequest request, Review review) {
+        review.setContent(request.getContent());
+        review.setPositive(request.getIsPositive());
+        return review;
     }
 
 }

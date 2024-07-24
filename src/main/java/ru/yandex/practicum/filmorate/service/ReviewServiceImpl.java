@@ -65,26 +65,17 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewDto updateReview(UpdatedReviewRequest request) {
-        Film film = filmStorage.findFilmById(request.getFilmId()).orElseThrow(() ->
-                new NotFoundException("Couldn't update review to unexisting film with id = " + request.getFilmId()));
-        User user = userStorage.findUserById(request.getUserId()).orElseThrow(() ->
-                new NotFoundException("Couldn't update review from unexisting user with id = " + request.getUserId()));
         Review review = reviewStorage.getReviewById(request.getReviewId()).orElseThrow(() ->
                 new NotFoundException("Couldn't update unexisting review with id = " + request.getReviewId()));
-
-        userStorage.addEvent(user.getId(), review.getId(), EventType.REVIEW, OperationType.UPDATE);
-
-        return ReviewMapper.mapToDto(reviewStorage.updateReview(ReviewMapper.mapToReview(request)));
+        userStorage.addEvent(review.getUserId(), review.getId(), EventType.REVIEW, OperationType.UPDATE);
+        return ReviewMapper.mapToDto(reviewStorage.updateReview(ReviewMapper.mapToReview(request, review)));
     }
-
 
     @Override
     public void deleteReview(int id) {
         Review review = reviewStorage.getReviewById(id).orElseThrow(() -> new ValidationException("Couldn't delete unexisting review with id = " + id));
         reviewStorage.deleteReview(id);
-
         userStorage.addEvent(review.getUserId(), review.getId(), EventType.REVIEW, OperationType.REMOVE);
-
     }
 
     @Override

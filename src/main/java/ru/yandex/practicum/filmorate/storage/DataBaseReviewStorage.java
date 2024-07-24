@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ReviewDataBaseStorage extends BaseStorage<Review> implements ReviewStorage {
+public class DataBaseReviewStorage extends BaseStorage<Review> implements ReviewStorage {
     private static final String INSERT_REVIEW = "INSERT INTO reviews (user_id, film_id, content, ispositive) " +
             " VALUES (?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE reviews SET content = ?, ispositive = ? WHERE id = ?";
@@ -47,7 +47,7 @@ public class ReviewDataBaseStorage extends BaseStorage<Review> implements Review
     private static final String DELETE_LIKE_DISLIKE = "DELETE FROM review_likes_dislikes WHERE user_id = ? " +
             "AND review_id = ?";
 
-    public ReviewDataBaseStorage(JdbcTemplate jdbc, RowMapper<Review> mapper, ResultSetExtractor<List<Review>> listExtractor) {
+    public DataBaseReviewStorage(JdbcTemplate jdbc, RowMapper<Review> mapper, ResultSetExtractor<List<Review>> listExtractor) {
         super(jdbc, mapper, listExtractor);
     }
 
