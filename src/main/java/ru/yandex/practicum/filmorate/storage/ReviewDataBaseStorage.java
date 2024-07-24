@@ -30,6 +30,13 @@ public class ReviewDataBaseStorage extends BaseStorage<Review> implements Review
             GROUP BY r.id
             HAVING r.film_id = ?;
             """;
+    private static final String GET_ALL_REVIEWS = """
+            SELECT r.*, SUM(rld.like_dislike) AS ld FROM REVIEWS AS r
+            LEFT JOIN REVIEW_LIKES_DISLIKES AS rld
+            ON rld.review_id = r.id
+            GROUP BY r.id;
+            """;
+
 
     private static final String INSERT_LIKE = "MERGE INTO review_likes_dislikes (user_id, review_id, like_dislike) " +
             " VALUES (?, ?, '1')";
@@ -52,6 +59,11 @@ public class ReviewDataBaseStorage extends BaseStorage<Review> implements Review
     @Override
     public List<Review> getReviewsByFilmId(int id) {
         return findManyExtractor(GET_ALL_REVIEWS_BY_FILM_ID, id);
+    }
+
+    @Override
+    public List<Review> getReviews() {
+        return findManyExtractor(GET_ALL_REVIEWS);
     }
 
     @Override

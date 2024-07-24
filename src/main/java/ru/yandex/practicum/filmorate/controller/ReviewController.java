@@ -31,9 +31,13 @@ public class ReviewController {
     }
 
     @GetMapping
-    public List<ReviewDto> getReviewsForFilm(@RequestParam(required = true) int filmId) {
-        log.info("Получен запрос на список отзывов к фильму с ID = {}", filmId);
-        return reviewService.getReviewsByFilmId(filmId);
+    public List<ReviewDto> getReviewsForFilm(@RequestParam(required = false) Integer filmId, @RequestParam(required = false) Integer count) {
+        if (filmId != null) {
+            log.info("Получен запрос на список отзывов к фильму с ID = {}", filmId);
+        } else {
+            log.info("Получен запрос на список отзывов");
+        }
+        return reviewService.getReviewsByFilmId(filmId, count);
     }
 
     @GetMapping("/{id}")

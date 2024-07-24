@@ -30,9 +30,24 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewDto> getReviewsByFilmId(int id) {
-        Film film = filmStorage.findFilmById(id).orElseThrow(() -> new ValidationException("Couldn't get reviews to" + " unexisting film with id = " + id));
-        return reviewStorage.getReviewsByFilmId(id).stream().map(ReviewMapper::mapToDto).toList();
+    public List<ReviewDto> getReviewsByFilmId(Integer id, Integer count) {
+        List<Review> lst;
+
+
+        if (id == null) {
+            lst = reviewStorage.getReviews();
+        } else {
+            filmStorage.findFilmById(id)
+                    .orElseThrow(() -> new ValidationException("Couldn't get reviews to" + " unexisting film with id = " + id));
+            lst = reviewStorage.getReviewsByFilmId(id);
+        }
+
+
+        if (count == null) {
+            return lst.stream().sorted((r0, r1) -> r1.getUseful() - r0.getUseful()).map(ReviewMapper::mapToDto).toList();
+        } else {
+            return lst.stream().limit(count).sorted((r0, r1) -> r1.getUseful() - r0.getUseful()).map(ReviewMapper::mapToDto).toList();
+        }
     }
 
     @Override

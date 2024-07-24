@@ -21,4 +21,6 @@ public interface ReviewStorage {
     void addDislikeToReview(int userId, int reviewId);
 
     void removeLikeDislikeFromReview(int userId, int reviewId);
+
+    List<Review> getReviews();
 }
