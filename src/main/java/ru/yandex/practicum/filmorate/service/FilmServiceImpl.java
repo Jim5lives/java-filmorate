@@ -145,6 +145,17 @@ public class FilmServiceImpl implements FilmService {
                 .orElseThrow(() -> new ValidationException("Не существует рейтинга с ID:" + mpaId));
         updatedFilm.setMpa(mpa);
 
+        if (request.getGenres() != null && !request.getGenres().isEmpty()) {
+            Set<Genre> genres = updatedFilm.getGenres().stream()
+                    .map(Genre::getId)
+                    .map(genreStorage::findGenreById)
+                    .flatMap(Optional::stream)
+                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(Genre::getId))));
+            updatedFilm.setGenres(genres);
+        } else {
+            updatedFilm.setGenres(new HashSet<>());
+        }
+
         if (request.getDirectors() != null && !request.getDirectors().isEmpty()) {
             Set<Director> directors = updatedFilm.getDirectors().stream()
                     .map(Director::getId)
@@ -152,6 +163,8 @@ public class FilmServiceImpl implements FilmService {
                     .flatMap(Optional::stream)
                     .collect(Collectors.toSet());
             updatedFilm.setDirectors(directors);
+        } else {
+            updatedFilm.setDirectors(new HashSet<>());
         }
 
         log.info("Обновленный фильм {} сохранен", updatedFilm);

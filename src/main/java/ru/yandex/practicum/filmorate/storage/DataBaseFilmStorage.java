@@ -172,9 +172,15 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                 updatedFilm.getMpa().getId(),
                 updatedFilm.getId()
         );
+        //обновление жанров
+        delete(DELETE_FILM_GENRE_QUERY, updatedFilm.getId());
 
+        for (Genre genre : updatedFilm.getGenres()) {
+            insert(INSERT_FILM_GENRES_QUERY, updatedFilm.getId(), genre.getId());
+        }
+
+        //обновление режиссеров
         delete(DELETE_FILM_DIRECTORS_QUERY, updatedFilm.getId());
-
         for (Director director : updatedFilm.getDirectors()) {
             insert(INSERT_FILM_DIRECTOR_QUERY, updatedFilm.getId(), director.getId());
         }
