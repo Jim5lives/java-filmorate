@@ -139,6 +139,12 @@ public class FilmServiceImpl implements FilmService {
         }
         updatedFilm = filmStorage.updateFilm(updatedFilm);
 
+        //сеттинг названий рейтингов, жанров и режиссеров
+        Integer mpaId = updatedFilm.getMpa().getId();
+        Mpa mpa = mpaStorage.findMpaById(mpaId)
+                .orElseThrow(() -> new ValidationException("Не существует рейтинга с ID:" + mpaId));
+        updatedFilm.setMpa(mpa);
+
         if (request.getDirectors() != null && !request.getDirectors().isEmpty()) {
             Set<Director> directors = updatedFilm.getDirectors().stream()
                     .map(Director::getId)

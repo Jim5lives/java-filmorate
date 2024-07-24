@@ -94,7 +94,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                     "ORDER BY cnt DESC ";
 
     private static final String UPDATE_QUERY = "UPDATE film SET name = ?, description = ?, release_date = ?, " +
-            "duration = ? WHERE id = ?";
+            "duration = ?, mpa_id = ? WHERE id = ?";
     private static final String ADD_LIKE_QUERY = "INSERT INTO film_likes (film_id, user_id) VALUES (?, ?)";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM film_likes WHERE film_id = ? AND user_id = ?";
     private static final String INSERT_FILM_DIRECTOR_QUERY = "INSERT INTO film_directors (film_id, director_id) " +
@@ -169,6 +169,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                 updatedFilm.getDescription(),
                 updatedFilm.getReleaseDate(),
                 updatedFilm.getDuration(),
+                updatedFilm.getMpa().getId(),
                 updatedFilm.getId()
         );
 

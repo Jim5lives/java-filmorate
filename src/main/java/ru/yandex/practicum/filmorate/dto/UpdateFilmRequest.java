@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.serialization.DurationSerializer;
 import ru.yandex.practicum.filmorate.serialization.LocalDateDeserializer;
 
@@ -20,6 +22,8 @@ public class UpdateFilmRequest {
     private LocalDate releaseDate;
     @JsonSerialize(using = DurationSerializer.class)
     private Duration duration;
+    private Set<Genre> genres;
+    private Mpa mpa;
     private Set<Director> directors;
 
 
@@ -39,8 +43,15 @@ public class UpdateFilmRequest {
         return duration != null;
     }
 
+    public boolean hasMpa() {
+        return mpa != null;
+    }
+
+    public boolean hasGenres() {
+        return genres != null && !genres.isEmpty();
+    }
+
     public boolean hasDirectors() {
         return directors != null && !directors.isEmpty();
     }
-
 }
