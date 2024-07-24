@@ -24,6 +24,8 @@ public interface UserStorage {
 
     Optional<User> deleteFriend(Integer userId, Integer friendId);
 
+    void deleteUserById(int id);
+
     Collection<Event> getFeed(Integer userId);
 
     void addEvent(Integer userId, Integer entityId, EventType type, OperationType operation);

@@ -113,4 +113,13 @@ public class InMemoryUserStorage implements UserStorage {
     private Integer getNextUserId() {
         return ++id;
     }
+
+    @Override
+    public void deleteUserById(int id) {
+        if (users.containsKey(id)) {
+            users.remove(id);
+        } else {
+            throw new NotFoundException("Пользователь не найден");
+        }
+    }
 }

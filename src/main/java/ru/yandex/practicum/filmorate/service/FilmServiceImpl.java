@@ -236,6 +236,13 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public void deleteFilmById(int id) {
+        filmStorage.findFilmById(id)
+                .orElseThrow(() -> new NotFoundException("Фильм не найден с ID: " + id));
+        filmStorage.deleteFilmById(id);
+    }
+
+    @Override
     public Collection<FilmDto> search(String query, String by) {
         Collection<Film> films = filmStorage.search(query, by);
         log.info("Выводится список фильмов, содержащих {} по {}", query, by);

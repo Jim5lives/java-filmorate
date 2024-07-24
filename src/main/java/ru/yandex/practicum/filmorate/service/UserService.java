@@ -26,6 +26,8 @@ public interface UserService {
 
     Collection<UserDto> getMutualFriends(Integer userId, Integer otherId);
 
+    void deleteUserById(int id);
+
     Collection<EventDto> getFeed(Integer userId);
 
     Collection<FilmDto> getRecommendations(Integer id);

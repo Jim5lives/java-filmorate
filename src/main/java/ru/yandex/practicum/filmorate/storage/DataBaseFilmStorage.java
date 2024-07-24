@@ -101,6 +101,12 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
             "VALUES (?, ?)";
     private static final String DELETE_FILM_DIRECTORS_QUERY = "DELETE FROM film_directors WHERE film_id =?";
 
+    private static final String DELETE_FILM_QUERY = "DELETE FROM film WHERE id = ?";
+    private static final String DELETE_FILM_LIKE_QUERY = "DELETE FROM film_likes WHERE film_id = ?";
+    private static final String DELETE_FILM_GENRE_QUERY = "DELETE FROM film_genres WHERE film_id = ?";
+    private static final String DELETE_FILM_DIRECTOR_QUERY = "DELETE FROM film_directors WHERE film_id = ?";
+
+
     private static final String FIND_COMMON_FILMS_QUERY = "WITH common_films_id as (" +
             "SELECT fl1.film_id FROM film_likes fl1 " +
             "JOIN film_likes fl2 ON fl1.film_id = fl2.film_id " +
@@ -224,6 +230,14 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     @Override
     public Collection<Film> getCommonFilms(Integer userId, Integer friendId) {
         return findManyExtractor(FIND_COMMON_FILMS_QUERY, userId, friendId);
+    }
+
+    @Override
+    public void deleteFilmById(int id) {
+        delete(DELETE_FILM_LIKE_QUERY, id);
+        delete(DELETE_FILM_GENRE_QUERY, id);
+        delete(DELETE_FILM_DIRECTOR_QUERY, id);
+        delete(DELETE_FILM_QUERY, id);
     }
 
     @Override

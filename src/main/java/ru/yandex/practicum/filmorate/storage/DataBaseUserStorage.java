@@ -33,6 +33,10 @@ public class DataBaseUserStorage extends BaseStorage<User> implements UserStorag
             + " f2 ON au.id = f2.user_id WHERE f.user_id = ?";
     private static final String ADD_FRIEND_QUERY = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
+    private static final String DELETE_USER_QUERY = "DELETE FROM app_user WHERE id = ?";
+    private static final String DELETE_USER_LIKES_QUERY = "DELETE FROM film_likes WHERE user_id = ?";
+    private static final String DELETE_USER_FRIENDS_QUERY = "DELETE FROM friends WHERE user_id = ? or friend_id = ?";
+
 
     private static final String ADD_EVENT_QUERY = "INSERT INTO events(e_timestamp, user_id, " +
             "operation, type, entity_id) VALUES (?, ?, ?, ?, ?)";
@@ -106,6 +110,13 @@ public class DataBaseUserStorage extends BaseStorage<User> implements UserStorag
     }
 
     @Override
+    public void deleteUserById(int id) {
+        delete(DELETE_USER_LIKES_QUERY, id);
+        delete(DELETE_USER_FRIENDS_QUERY, id, id);
+        delete(DELETE_USER_QUERY, id);
+    }
+
+    @Override
     public void addEvent(Integer userId, Integer entityId, EventType type, OperationType operation) {
         int id = insert(ADD_EVENT_QUERY, LocalDateTime.now(), userId, operation.toString(), type.toString(), entityId);
         log.info("Добавлено событие в ленту с id = {}, UID = {}, entity = {}, type = {}, operation = {}.",
@@ -116,7 +127,4 @@ public class DataBaseUserStorage extends BaseStorage<User> implements UserStorag
     public Collection<Event> getFeed(Integer userId) {
         return jdbc.query(GET_EVENT_QUERY, new EventRowMapper(), userId);
     }
-
-
-
 }

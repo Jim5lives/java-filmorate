@@ -3,11 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.EventDto;
-import ru.yandex.practicum.filmorate.dto.NewUserRequest;
-import ru.yandex.practicum.filmorate.dto.UpdateUserRequest;
-import ru.yandex.practicum.filmorate.dto.UserDto;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.mappers.EventMapper;
@@ -155,6 +151,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteUserById(int id) {
+        userStorage.findUserById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + id));
+        userStorage.deleteUserById(id);
+    }
+
+    @Override
     public Collection<EventDto> getFeed(Integer userId) {
         User user = userStorage.findUserById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID: " + userId + " не найден."));
@@ -168,5 +171,4 @@ public class UserServiceImpl implements UserService {
 
         return filmStorage.getLikedFilmsUser(id).stream().map(FilmMapper::mapToFilmDto).toList();
     }
-
 }
