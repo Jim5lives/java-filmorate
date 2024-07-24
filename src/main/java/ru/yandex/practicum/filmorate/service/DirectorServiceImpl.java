@@ -37,6 +37,9 @@ public class DirectorServiceImpl implements DirectorService {
     @Override
     public DirectorDto addDirector(NewDirectorRequest request) {
         Director director = DirectorMapper.mapToDirector(request);
+        if (director.getName().isBlank()) {
+            throw new ValidationException("Некорректное имя режиссера");
+        }
         director = directorStorage.addDirector(director);
         log.info("Режиссер успешно создан, ID = {}", director.getId());
         return DirectorMapper.mapToDirectorDto(director);

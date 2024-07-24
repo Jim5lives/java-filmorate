@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -210,7 +209,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                 .filter(film -> (year == null || film.getReleaseDate().getYear() == year))
                 .filter(film -> (genreId == null ||
                         film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId))))
-                .sorted(Comparator.comparingInt(film -> film.getLikes().size()))
+                .sorted((f0, f1) -> f1.getLikes().size() - f0.getLikes().size())
                 .limit(count)
                 .toList();
         return films.reversed();
