@@ -102,6 +102,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             films.remove(id);
         } else {
             throw new NotFoundException("Фильм не найден");
+        }
     }
 
     @Override

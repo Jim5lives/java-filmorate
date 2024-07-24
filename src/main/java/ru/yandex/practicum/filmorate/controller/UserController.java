@@ -75,7 +75,7 @@ public class UserController {
         log.info("Получен запрос на удаление пользователя id={}", id);
         userService.deleteUserById(id);
     }
-  
+
     @GetMapping("/{id}/feed")
     public Collection<EventDto> getFeed(@PathVariable Integer id) {
         log.info("Получен запрос на вывод ленты событий для пользователя с id={}", id);

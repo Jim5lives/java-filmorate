@@ -85,7 +85,7 @@ public class FilmController {
         log.info("Получен запрос на удаление фильма с id={}", id);
         filmService.deleteFilmById(id);
     }
-  
+
     @GetMapping("/search")
     public Collection<FilmDto> search(@RequestParam String query,
                                       @RequestParam String by) {

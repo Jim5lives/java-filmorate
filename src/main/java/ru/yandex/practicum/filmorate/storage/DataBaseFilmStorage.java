@@ -239,7 +239,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
         delete(DELETE_FILM_DIRECTOR_QUERY, id);
         delete(DELETE_FILM_QUERY, id);
     }
-  
+
     @Override
     public Collection<Film> search(String query, String by) {
         StringBuilder sb = new StringBuilder(FIND_ALL_QUERY);
