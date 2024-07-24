@@ -231,7 +231,7 @@ public class FilmServiceImpl implements FilmService {
                     .map(Director::getId)
                     .anyMatch(id -> id.equals(directorId));
             if (!directorExists) {
-                throw new ValidationException("Не существует режиссера с ID: " + directorId);
+                throw new NotFoundException("Не существует режиссера с ID: " + directorId);
             }
         }
 
@@ -267,6 +267,6 @@ public class FilmServiceImpl implements FilmService {
         log.info("Выводится список фильмов, содержащих {} по {}", query, by);
         return films.stream()
                 .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(FilmDto::getId))));
+                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(FilmDto::getId).reversed())));
     }
 }

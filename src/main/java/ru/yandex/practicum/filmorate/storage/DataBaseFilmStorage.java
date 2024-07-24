@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -121,6 +123,7 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
             "AND fl3.film_id NOT IN (SELECT film_id FROM film_likes WHERE user_id = ? )) " +
             FIND_ALL_QUERY +
             " WHERE f.id in (SELECT film_id FROM likedFilm)";
+    private static final Logger log = LoggerFactory.getLogger(DataBaseFilmStorage.class);
 
     public DataBaseFilmStorage(JdbcTemplate jdbc, ResultSetExtractor<List<Film>> listExtractor) {
         super(listExtractor, jdbc);
@@ -254,18 +257,18 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
     @Override
     public Collection<Film> search(String query, String by) {
         StringBuilder sb = new StringBuilder(FIND_ALL_QUERY);
-        query = "%" + query + "%";
+        query = "%" + query.toUpperCase() + "%";
 
         if (by.contains("title") && by.contains("director")) {
-            sb.append(" WHERE f.name LIKE ? OR d.name LIKE ?");
+            sb.append(" WHERE UPPER(f.name) LIKE UPPER(?) OR UPPER(d.name) LIKE UPPER(?) ORDER BY id DESC");
             return findManyExtractor(sb.toString(), query, query);
 
         } else if (by.contains("title")) {
-            sb.append(" WHERE f.name LIKE ?");
+            sb.append(" WHERE UPPER(f.name) LIKE UPPER(?) ORDER BY id DESC");
             return findManyExtractor(sb.toString(), query);
 
         } else if (by.contains("director")) {
-            sb.append(" WHERE d.name LIKE ?");
+            sb.append(" WHERE UPPER(d.name) LIKE UPPER(?) ORDER BY id DESC");
             return findManyExtractor(sb.toString(), query);
 
         } else {

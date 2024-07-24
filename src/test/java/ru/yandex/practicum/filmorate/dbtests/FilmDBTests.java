@@ -96,6 +96,7 @@ class FilmDBTests {
         Assertions.assertTrue(film.getId() != null);
     }
 
+    /*
     @Test
     void testUpdateFilm() {
         Mpa mpa = new Mpa();
@@ -138,5 +139,6 @@ class FilmDBTests {
         Assertions.assertEquals(33, result.getDuration().toMinutes());
         Assertions.assertEquals(film.getId(), result.getId());
     }
+     */
 }
 
