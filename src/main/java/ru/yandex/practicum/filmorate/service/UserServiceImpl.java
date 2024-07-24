@@ -15,10 +15,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validators.UserValidator.isUserInfoValid;
@@ -96,7 +93,7 @@ public class UserServiceImpl implements UserService {
         log.info("Выводится список друзей пользователя id={}", id);
         return userStorage.getAllFriends(selectedUser.getId()).stream()
                 .map(UserMapper::mapToUserDto)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(UserDto::getId))));
     }
 
     @Override
