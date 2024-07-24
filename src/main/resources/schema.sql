@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS app_user (
 
 CREATE TABLE IF NOT EXISTS film_likes (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    film_id INTEGER REFERENCES film(id),
-    user_id INTEGER REFERENCES app_user(id)
+    film_id INTEGER REFERENCES film(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS genre (
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS genre (
 
 CREATE TABLE IF NOT EXISTS film_genres (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    film_id INTEGER REFERENCES film(id),
+    film_id INTEGER REFERENCES film(id) ON DELETE CASCADE,
     genre_id INTEGER REFERENCES genre(id)
 );
 
@@ -58,8 +58,8 @@ CREATE TABLE IF NOT EXISTS director (
 
 CREATE TABLE IF NOT EXISTS film_directors (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    film_id INTEGER REFERENCES film(id),
-    director_id INTEGER REFERENCES director(id)
+    film_id INTEGER REFERENCES film(id) ON DELETE CASCADE,
+    director_id INTEGER REFERENCES director(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS friends (

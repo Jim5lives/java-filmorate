@@ -96,6 +96,8 @@ public final class FilmMapper {
 
         if (request.hasDirectors()) {
             film.setDirectors(request.getDirectors());
+        } else {
+            film.setDirectors(new HashSet<>());
         }
 
         return film;
