@@ -211,9 +211,11 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                         film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId))))
                 .sorted((f0, f1) -> f1.getLikes().size() - f0.getLikes().size())
                 .limit(count)
+                .sorted((f0, f1) -> f1.getId() - f0.getId())
                 .toList();
         return films.reversed();
     }
+
 
     @Override
     public List<Film> getFilmsByDirector(String sortBy, Integer directorId) {
