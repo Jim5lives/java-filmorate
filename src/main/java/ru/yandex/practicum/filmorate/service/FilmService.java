@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface FilmService {
 
@@ -22,7 +23,11 @@ public interface FilmService {
 
     FilmDto deleteLike(Integer filmId, Integer userId);
 
-    Collection<FilmDto> getCommonFilms(Integer userId, Integer friendId);
+    List<FilmDto> getFilmsByDirector(String sortBy, Integer directorId);
 
+    Collection<FilmDto> getCommonFilms(Integer userId, Integer friendId);
+  
     void deleteFilmById(int id);
+
+    Collection<FilmDto> search(String query, String by);
 }

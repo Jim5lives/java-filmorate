@@ -37,6 +37,17 @@ CREATE TABLE IF NOT EXISTS film_genres (
     genre_id INTEGER REFERENCES genre(id)
 );
 
+CREATE TABLE IF NOT EXISTS director (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS film_directors (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    film_id INTEGER REFERENCES film(id),
+    director_id INTEGER REFERENCES director(id)
+);
+
 CREATE TABLE IF NOT EXISTS friends (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     user_id INTEGER REFERENCES app_user(id),
@@ -58,13 +69,11 @@ CREATE TABLE IF NOT EXISTS review_likes_dislikes (
     PRIMARY KEY (user_id, review_id)
 );
 
-CREATE TABLE IF NOT EXISTS director (
+CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL UNIQUE
-);
-
-CREATE TABLE IF NOT EXISTS film_directors (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    film_id INTEGER REFERENCES film(id),
-    director_id INTEGER REFERENCES director(id)
+    e_timestamp TIMESTAMP,
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE,
+    operation ENUM('ADD', 'UPDATE', 'REMOVE'),
+    type ENUM('REVIEW', 'FRIEND', 'LIKE'),
+    entity_id INTEGER
 );

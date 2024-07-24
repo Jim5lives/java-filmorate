@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.mappers;
 
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -19,6 +20,7 @@ public class FilmListResultSetExtractor implements ResultSetExtractor<List<Film>
         Map<Integer, Film> filmMap = new HashMap<>();
         Map<Integer, Set<Genre>> genreMap = new HashMap<>();
         Map<Integer, Set<Integer>> likeMap = new HashMap<>();
+        Map<Integer, Set<Director>> directorsMap = new HashMap<>();
 
         while (rs.next()) {
             int filmId = rs.getInt("id");
@@ -53,6 +55,15 @@ public class FilmListResultSetExtractor implements ResultSetExtractor<List<Film>
             if (!rs.wasNull()) {
                 likeMap.computeIfAbsent(filmId, k -> new HashSet<>()).add(likeId);
             }
+
+            int directorId = rs.getInt("director_id");
+            if (directorId != 0) {
+                Director director = new Director();
+                director.setId(directorId);
+                director.setName(rs.getString("director_name"));
+                directorsMap.computeIfAbsent(filmId, k ->
+                        new TreeSet<>(Comparator.comparingInt(Director::getId))).add(director);
+            }
         }
 
 
@@ -61,6 +72,7 @@ public class FilmListResultSetExtractor implements ResultSetExtractor<List<Film>
             Film film = entry.getValue();
             film.setGenres(genreMap.getOrDefault(filmId, Collections.emptySet()));
             film.setLikes(likeMap.getOrDefault(filmId, Collections.emptySet()));
+            film.setDirectors(directorsMap.getOrDefault(filmId, Collections.emptySet()));
         }
 
         return new ArrayList<>(filmMap.values());

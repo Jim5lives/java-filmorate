@@ -10,5 +10,4 @@ public interface MpaStorage {
     Collection<Mpa> getAllMpa();
 
     Optional<Mpa> findMpaById(Integer id);
-
 }

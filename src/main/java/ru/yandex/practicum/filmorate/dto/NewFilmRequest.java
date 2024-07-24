@@ -19,4 +19,6 @@ public class NewFilmRequest {
     private Duration duration;
     private Set<GenreDto> genres;
     private MpaDto mpa;
+    private Set<DirectorDto> directors;
+
 }

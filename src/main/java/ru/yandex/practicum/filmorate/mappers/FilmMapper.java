@@ -2,10 +2,8 @@ package ru.yandex.practicum.filmorate.mappers;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.dto.GenreDto;
-import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
-import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.*;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -38,6 +36,16 @@ public final class FilmMapper {
         } else {
             film.setMpa(new Mpa());
         }
+
+        if (request.getDirectors() != null && !request.getDirectors().isEmpty()) {
+            Set<Director> directors = request.getDirectors().stream()
+                    .map(DirectorMapper::mapToDirector)
+                    .collect(Collectors.toSet());
+            film.setDirectors(directors);
+        } else {
+            film.setDirectors(new HashSet<>());
+        }
+
         return film;
     }
 
@@ -49,11 +57,18 @@ public final class FilmMapper {
         dto.setLikes(film.getLikes());
         dto.setReleaseDate(film.getReleaseDate());
         dto.setDuration(film.getDuration());
+
         Set<GenreDto> genresDto = film.getGenres().stream()
                 .map(GenreMapper::mapToGenreDto)
                 .collect(Collectors.toSet());
         dto.setGenres(genresDto);
+
         dto.setMpa(MpaMapper.mapToMpaDto(film.getMpa()));
+
+        Set<DirectorDto> directorsDto = film.getDirectors().stream()
+                .map(DirectorMapper::mapToDirectorDto)
+                .collect(Collectors.toSet());
+        dto.setDirectors(directorsDto);
         return dto;
     }
 
@@ -70,6 +85,11 @@ public final class FilmMapper {
         if (request.hasDuration()) {
             film.setDuration(request.getDuration());
         }
+
+        if (request.hasDirectors()) {
+            film.setDirectors(request.getDirectors());
+        }
+
         return film;
     }
 }
