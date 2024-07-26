@@ -4,10 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.validation.annotation.Validated;
 
 @Data
-@Validated
 public class UpdatedReviewRequest {
     @NotNull
     private Integer reviewId;
@@ -24,5 +22,5 @@ public class UpdatedReviewRequest {
     private String content;
 
     @NotNull
-    Boolean isPositive;
+    private Boolean isPositive;
 }
