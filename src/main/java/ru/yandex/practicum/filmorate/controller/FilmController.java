@@ -1,12 +1,15 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
@@ -16,6 +19,7 @@ import java.util.List;
 @RequestMapping("/films")
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 public class FilmController {
     private final FilmService filmService;
 
@@ -45,8 +49,8 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<FilmDto> getPopularFilms(
-            @RequestParam(defaultValue = "10") int count,
-            @RequestParam(required = false) Integer year,
+            @RequestParam(defaultValue = "10") @Positive int count,
+            @RequestParam(required = false) @Min(value = 1895, message = "Первый фильм вышел в 1895 году") Integer year,
             @RequestParam(required = false) Integer genreId) {
         log.info("Получен запрос на вывод популярных фильмов");
         return filmService.getPopularFilms(count, year, genreId);
@@ -68,10 +72,13 @@ public class FilmController {
 
     @GetMapping("/director/{directorId}")
     public List<FilmDto> getFilmsByDirector(@RequestParam String sortBy, @PathVariable int directorId) {
-        if (!(sortBy.equals("year") || sortBy.equals("likes"))) {
-            throw new NotFoundException("Неправильно выбран параметр sortBy");
+        String sortingCriteria;
+        try {
+            sortingCriteria = SortingCriteria.valueOf(sortBy.toUpperCase()).toString();
+        } catch (IllegalArgumentException iae) {
+            throw new ValidationException("Неправильно выбран параметр sortBу");
         }
-        return filmService.getFilmsByDirector(sortBy, directorId);
+        return filmService.getFilmsByDirector(sortingCriteria, directorId);
     }
 
     @GetMapping("/common")
