@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS film_directors (
 
 CREATE TABLE IF NOT EXISTS friends (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    user_id INTEGER REFERENCES app_user(id),
-    friend_id INTEGER REFERENCES app_user(id)
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE,
+    friend_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS reviews (

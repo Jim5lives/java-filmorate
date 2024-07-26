@@ -34,9 +34,6 @@ public class DataBaseUserStorage extends BaseStorage<User> implements UserStorag
     private static final String ADD_FRIEND_QUERY = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
     private static final String DELETE_USER_QUERY = "DELETE FROM app_user WHERE id = ?";
-    private static final String DELETE_USER_LIKES_QUERY = "DELETE FROM film_likes WHERE user_id = ?";
-    private static final String DELETE_USER_FRIENDS_QUERY = "DELETE FROM friends WHERE user_id = ? or friend_id = ?";
-
     private static final String ADD_EVENT_QUERY = "INSERT INTO events(e_timestamp, user_id, " +
             "operation, type, entity_id) VALUES (?, ?, ?, ?, ?)";
     private static final String GET_EVENT_QUERY = "SELECT * from events WHERE user_id = ?";
@@ -109,8 +106,6 @@ public class DataBaseUserStorage extends BaseStorage<User> implements UserStorag
 
     @Override
     public void deleteUserById(int id) {
-        delete(DELETE_USER_LIKES_QUERY, id);
-        delete(DELETE_USER_FRIENDS_QUERY, id, id);
         delete(DELETE_USER_QUERY, id);
     }
 
