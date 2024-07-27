@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @Repository
 @Primary
@@ -120,10 +121,31 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
             FIND_ALL_QUERY +
             " WHERE f.id in (SELECT film_id FROM likedFilm)";
 
+    private static final String FIND_POPULAR_QUERY =
+            "SELECT " +
+                    "f.*, " +
+                    "m.name AS mpa_name, " +
+                    "g.id AS genres_id, " +
+                    "g.name AS genre_name, " +
+                    "fl.user_id AS likes_id, " +
+                    "d.ID AS director_id, " +
+                    "d.NAME AS director_name " +
+                    "FROM film f " +
+                    "LEFT JOIN mpa m ON f.mpa_id = m.id " +
+                    "LEFT JOIN film_genres fg ON f.id = fg.film_id " +
+                    "LEFT JOIN genre g ON fg.genre_id = g.id " +
+                    "LEFT JOIN film_likes fl ON f.id = fl.film_id " +
+                    "LEFT JOIN film_directors fd ON fd.film_id = f.id " +
+                    "LEFT JOIN director d ON d.id = fd.director_id " +
+                    "WHERE f.id IN ( " +
+                    "SELECT f_sub.id " +
+                    "FROM film f_sub " +
+                    "LEFT JOIN film_genres fg_sub ON f_sub.id = fg_sub.film_id " +
+                    "LEFT JOIN genre g_sub ON fg_sub.genre_id = g_sub.id ";
+
     public DataBaseFilmStorage(JdbcTemplate jdbc, ResultSetExtractor<List<Film>> listExtractor) {
         super(listExtractor, jdbc);
     }
-
 
     @Override
     public Collection<Film> getAllFilms() {
@@ -230,15 +252,35 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
 
     @Override
     public Collection<Film> getPopularFilms(int count, Integer year, Integer genreId) {
-        List<Film> films = getAllFilms().stream()
-                .filter(film -> (year == null || film.getReleaseDate().getYear() == year))
-                .filter(film -> (genreId == null ||
-                        film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId))))
-                .sorted((f0, f1) -> f1.getLikes().size() - f0.getLikes().size())
-                .limit(count)
-                .sorted((f0, f1) -> f1.getId() - f0.getId())
+        StringBuilder sb = new StringBuilder(FIND_POPULAR_QUERY);
+        List<Integer> params = new ArrayList<>();
+
+        if (year != null || genreId != null) {
+            sb.append(" WHERE 1=1");
+            if (year != null) {
+                sb.append(" AND YEAR(f_sub.release_date) = ? ");
+                params.add(year);
+            }
+            if (genreId != null) {
+                sb.append(" AND g_sub.id = ? ");
+                params.add(genreId);
+            }
+        }
+
+        sb.append(") " +
+                " ORDER BY (SELECT COUNT(fl_sub.user_id) " +
+                " FROM film_likes fl_sub " +
+                " WHERE fl_sub.film_id = f.id) DESC, f.id LIMIT ?"
+        );
+        params.add(count);
+
+        //т.к. обрезаются жанры, если у фильма их больше одного, еще раз обращаемся к б.д. и сеттим их
+        //по-другому за целый день не придумали работающего решения
+        return findManyExtractor(sb.toString(), params.toArray())
+                .stream()
+                .map(film -> findFilmById(film.getId()))
+                .flatMap(Optional::stream)
                 .toList();
-        return films.reversed();
     }
 
 
