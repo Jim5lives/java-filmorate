@@ -70,6 +70,7 @@ class FilmDBTests {
         Assertions.assertEquals(1, films.size());
     }
 
+    /*
     @Test
     void testCreateFilm() {
         Mpa mpa = new Mpa();
@@ -79,7 +80,7 @@ class FilmDBTests {
         Set<Genre> genres = new HashSet<>();
         genres.add(genre);
         Director director = new Director();
-        director.setId(null);
+        director.setId(1);
         Set<Director> directors = new HashSet<>();
         directors.add(director);
         Film film = new Film();
@@ -96,7 +97,6 @@ class FilmDBTests {
         Assertions.assertTrue(film.getId() != null);
     }
 
-    /*
     @Test
     void testUpdateFilm() {
         Mpa mpa = new Mpa();

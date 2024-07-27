@@ -1,16 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -123,7 +119,6 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
             "AND fl3.film_id NOT IN (SELECT film_id FROM film_likes WHERE user_id = ? )) " +
             FIND_ALL_QUERY +
             " WHERE f.id in (SELECT film_id FROM likedFilm)";
-    private static final Logger log = LoggerFactory.getLogger(DataBaseFilmStorage.class);
 
     public DataBaseFilmStorage(JdbcTemplate jdbc, ResultSetExtractor<List<Film>> listExtractor) {
         super(listExtractor, jdbc);
@@ -153,13 +148,23 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                 film.getMpa().getId());
         film.setId(id);
 
-        for (Genre genre : film.getGenres()) {
-            insert(INSERT_FILM_GENRES_QUERY, id, genre.getId());
-        }
+        jdbc.batchUpdate(
+                INSERT_FILM_GENRES_QUERY,
+                film.getGenres(),
+                film.getGenres().size(),
+                (ps, genreDto) -> {
+                    ps.setInt(1, film.getId());
+                    ps.setInt(2, genreDto.getId());
+                });
 
-        for (Director director : film.getDirectors()) {
-            insert(INSERT_FILM_DIRECTOR_QUERY, id, director.getId());
-        }
+        jdbc.batchUpdate(
+                INSERT_FILM_DIRECTOR_QUERY,
+                film.getDirectors(),
+                film.getDirectors().size(),
+                (ps, directorDto) -> {
+                    ps.setInt(1, film.getId());
+                    ps.setInt(2, directorDto.getId());
+                });
 
         return film;
     }
@@ -175,17 +180,33 @@ public class DataBaseFilmStorage extends BaseStorage<Film> implements FilmStorag
                 updatedFilm.getMpa().getId(),
                 updatedFilm.getId()
         );
+
         //обновление жанров
         delete(DELETE_FILM_GENRE_QUERY, updatedFilm.getId());
 
-        for (Genre genre : updatedFilm.getGenres()) {
-            insert(INSERT_FILM_GENRES_QUERY, updatedFilm.getId(), genre.getId());
+        if (updatedFilm.getGenres() != null) {
+            jdbc.batchUpdate(
+                    INSERT_FILM_GENRES_QUERY,
+                    updatedFilm.getGenres(),
+                    updatedFilm.getGenres().size(),
+                    (ps, genreDto) -> {
+                        ps.setInt(1, updatedFilm.getId());
+                        ps.setInt(2, genreDto.getId());
+                    });
         }
 
         //обновление режиссеров
         delete(DELETE_FILM_DIRECTORS_QUERY, updatedFilm.getId());
-        for (Director director : updatedFilm.getDirectors()) {
-            insert(INSERT_FILM_DIRECTOR_QUERY, updatedFilm.getId(), director.getId());
+
+        if (updatedFilm.getDirectors() != null) {
+            jdbc.batchUpdate(
+                    INSERT_FILM_DIRECTOR_QUERY,
+                    updatedFilm.getDirectors(),
+                    updatedFilm.getDirectors().size(),
+                    (ps, directorDto) -> {
+                        ps.setInt(1, updatedFilm.getId());
+                        ps.setInt(2, directorDto.getId());
+                    });
         }
 
         return updatedFilm;
