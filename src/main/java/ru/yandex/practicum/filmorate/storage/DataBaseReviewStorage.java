@@ -21,20 +21,43 @@ public class DataBaseReviewStorage extends BaseStorage<Review> implements Review
             LEFT JOIN REVIEW_LIKES_DISLIKES AS rld
             ON rld.review_id = r.id
             GROUP BY r.id
-            HAVING r.id = ?;
+            HAVING r.id = ?
             """;
-    private static final String GET_ALL_REVIEWS_BY_FILM_ID = """
-            SELECT r.*, SUM(rld.like_dislike) AS ld FROM REVIEWS AS r
+
+    private static final String GET_REVIEWS_BY_FILM_ID = """
+            SELECT r.*, COALESCE(SUM(rld.like_dislike), 0) AS ld FROM REVIEWS AS r
             LEFT JOIN REVIEW_LIKES_DISLIKES AS rld
             ON rld.review_id = r.id
             GROUP BY r.id
-            HAVING r.film_id = ?;
+            HAVING r.film_id = ?
+            ORDER BY ld DESC NULLS LAST
             """;
-    private static final String GET_ALL_REVIEWS = """
-            SELECT r.*, SUM(rld.like_dislike) AS ld FROM REVIEWS AS r
+
+    private static final String GET_REVIEWS_BY_FILM_ID_LIMITED = """
+            SELECT r.*, COALESCE(SUM(rld.like_dislike), 0) AS ld FROM REVIEWS AS r
             LEFT JOIN REVIEW_LIKES_DISLIKES AS rld
             ON rld.review_id = r.id
-            GROUP BY r.id;
+            GROUP BY r.id
+            HAVING r.film_id = ?
+            ORDER BY ld DESC
+            LIMIT ?
+            """;
+
+    private static final String GET_ALL_REVIEWS = """
+            SELECT r.*, COALESCE(SUM(rld.like_dislike), 0) AS ld FROM REVIEWS AS r
+            LEFT JOIN REVIEW_LIKES_DISLIKES AS rld
+            ON rld.review_id = r.id
+            GROUP BY r.id
+            ORDER BY ld DESC
+            """;
+
+    private static final String GET_ALL_REVIEWS_LIMITED = """
+            SELECT r.*, COALESCE(SUM(rld.like_dislike), 0) AS ld FROM REVIEWS AS r
+            LEFT JOIN REVIEW_LIKES_DISLIKES AS rld
+            ON rld.review_id = r.id
+            GROUP BY r.id
+            ORDER BY ld DESC
+            LIMIT ?
             """;
 
 
@@ -56,14 +79,25 @@ public class DataBaseReviewStorage extends BaseStorage<Review> implements Review
         return findOneMapper(GET_REVIEW_BY_ID, id);
     }
 
+
     @Override
     public List<Review> getReviewsByFilmId(int id) {
-        return findManyExtractor(GET_ALL_REVIEWS_BY_FILM_ID, id);
+        return findManyExtractor(GET_REVIEWS_BY_FILM_ID, id);
+    }
+
+    @Override
+    public List<Review> getReviewsByFilmId(int id, int limit) {
+        return findManyExtractor(GET_REVIEWS_BY_FILM_ID_LIMITED, id, limit);
     }
 
     @Override
     public List<Review> getReviews() {
         return findManyExtractor(GET_ALL_REVIEWS);
+    }
+
+    @Override
+    public List<Review> getReviews(int limit) {
+        return findManyExtractor(GET_ALL_REVIEWS_LIMITED, limit);
     }
 
     @Override

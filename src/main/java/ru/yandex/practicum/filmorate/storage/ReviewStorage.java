@@ -10,6 +10,8 @@ public interface ReviewStorage {
 
     List<Review> getReviewsByFilmId(int id);
 
+    List<Review> getReviewsByFilmId(int id, int limit);
+
     Review createReview(Review review);
 
     Review updateReview(Review review);
@@ -23,4 +25,6 @@ public interface ReviewStorage {
     void removeLikeDislikeFromReview(int userId, int reviewId);
 
     List<Review> getReviews();
+
+    List<Review> getReviews(int limit);
 }
