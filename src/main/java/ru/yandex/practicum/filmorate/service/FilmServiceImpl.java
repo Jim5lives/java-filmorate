@@ -6,17 +6,12 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.mappers.DirectorMapper;
 import ru.yandex.practicum.filmorate.mappers.FilmMapper;
-import ru.yandex.practicum.filmorate.mappers.GenreMapper;
-import ru.yandex.practicum.filmorate.mappers.MpaMapper;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static ru.yandex.practicum.filmorate.validators.FilmValidator.isFilmInfoValid;
 
 @Service
 @RequiredArgsConstructor
@@ -46,127 +41,18 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public FilmDto createFilm(NewFilmRequest request) {
-        Film film = FilmMapper.mapTofilm(request);
-        // валидация
-        try {
-            isFilmInfoValid(film);
-        } catch (ValidationException e) {
-            log.warn("Ошибка валидации: {}", e.getMessage());
-            throw new ValidationException(e.getMessage());
-        }
-        Integer mpaId = film.getMpa().getId();
-        Mpa mpa = mpaStorage.findMpaById(mpaId)
-                .orElseThrow(() -> new ValidationException("Не существует рейтинга с ID:" + mpaId));
-
-        if (request.getGenres() != null) {
-            List<Integer> genreIds = film.getGenres().stream()
-                    .map(Genre::getId)
-                    .toList();
-            for (Integer id : genreIds) {
-                genreStorage.findGenreById(id)
-                        .orElseThrow(() -> new ValidationException("Не существует жанра с ID:" + id));
-            }
-        } else {
-            film.setGenres(new HashSet<>());
-        }
-        if (request.getDirectors() != null) {
-            List<Integer> directorIds = film.getDirectors().stream()
-                    .map(Director::getId)
-                    .toList();
-            for (Integer id : directorIds) {
-                directorStorage.findDirectorById(id)
-                        .orElseThrow(() -> new ValidationException("Не существует режиссера с ID:" + id));
-            }
-        } else {
-            film.setDirectors(new HashSet<>());
-        }
-        film = filmStorage.createFilm(film);
-
-        // маппинг
+        validate(request);
+        Film film = filmStorage.createFilm(FilmMapper.mapTofilm(request));
         FilmDto filmDto = FilmMapper.mapToFilmDto(film);
-
-        filmDto.setMpa(MpaMapper.mapToMpaDto(mpa));
-
-        if (request.getGenres() != null && !request.getGenres().isEmpty()) {
-            Set<GenreDto> genres = film.getGenres().stream()
-                    .map(Genre::getId)
-                    .map(genreStorage::findGenreById)
-                    .flatMap(Optional::stream)
-                    .map(GenreMapper::mapToGenreDto)
-                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(GenreDto::getId))));
-            filmDto.setGenres(genres);
-        } else {
-            filmDto.setGenres(new HashSet<>());
-        }
-
-        if (request.getDirectors() != null && !request.getDirectors().isEmpty()) {
-            Set<DirectorDto> directors = film.getDirectors().stream()
-                    .map(Director::getId)
-                    .map(directorStorage::findDirectorById)
-                    .flatMap(Optional::stream)
-                    .map(DirectorMapper::mapToDirectorDto)
-                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(DirectorDto::getId))));
-            filmDto.setDirectors(directors);
-        } else {
-            filmDto.setDirectors(new HashSet<>());
-        }
-
         log.info("Фильм создан: {}", filmDto);
         return filmDto;
     }
 
     @Override
-    public FilmDto updateFilm(UpdateFilmRequest request) {
-        if (request.getId() == null) {
-            log.warn("Не указан id фильма для обновления");
-            throw new ValidationException("Id фильма для обновления должен быть указан.");
-        }
-
-        Optional<Film> filmOpt = filmStorage.findFilmById(request.getId());
-        if (filmOpt.isEmpty()) {
-            log.warn("Фильм с id {} не найден", request.getId());
-            throw new NotFoundException("Фильм с указанным id = " + request.getId() + " не найден.");
-        }
-
-        Film filmToUpdate = filmOpt.get();
-        Film updatedFilm = FilmMapper.updateFilmFields(filmToUpdate, request);
-
-        try {
-            isFilmInfoValid(updatedFilm);
-        } catch (ValidationException exception) {
-            log.warn(exception.getMessage());
-            throw exception;
-        }
-        updatedFilm = filmStorage.updateFilm(updatedFilm);
-
-        //сеттинг названий рейтингов, жанров и режиссеров
-        Integer mpaId = updatedFilm.getMpa().getId();
-        Mpa mpa = mpaStorage.findMpaById(mpaId)
-                .orElseThrow(() -> new ValidationException("Не существует рейтинга с ID:" + mpaId));
-        updatedFilm.setMpa(mpa);
-
-        if (request.getGenres() != null && !request.getGenres().isEmpty()) {
-            Set<Genre> genres = updatedFilm.getGenres().stream()
-                    .map(Genre::getId)
-                    .map(genreStorage::findGenreById)
-                    .flatMap(Optional::stream)
-                    .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(Genre::getId))));
-            updatedFilm.setGenres(genres);
-        } else {
-            updatedFilm.setGenres(new HashSet<>());
-        }
-
-        if (request.getDirectors() != null && !request.getDirectors().isEmpty()) {
-            Set<Director> directors = updatedFilm.getDirectors().stream()
-                    .map(Director::getId)
-                    .map(directorStorage::findDirectorById)
-                    .flatMap(Optional::stream)
-                    .collect(Collectors.toSet());
-            updatedFilm.setDirectors(directors);
-        } else {
-            updatedFilm.setDirectors(new HashSet<>());
-        }
-
+    public FilmDto updateFilm(UpdatedFilmRequest request) {
+        validate(request);
+        Film updatedFilm = FilmMapper.mapTofilm(request);
+        filmStorage.updateFilm(updatedFilm);
         log.info("Обновленный фильм {} сохранен", updatedFilm);
         return FilmMapper.mapToFilmDto(updatedFilm);
     }
@@ -269,4 +155,43 @@ public class FilmServiceImpl implements FilmService {
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingInt(FilmDto::getId).reversed())));
     }
+
+    private void validate(NewFilmRequest request) {
+        validate(request.getMpa(), request.getGenres(), request.getDirectors());
+    }
+
+    private void validate(UpdatedFilmRequest request) {
+        Film existingFilm = filmStorage.findFilmById(request.getId())
+                .orElseThrow(() -> new NotFoundException("Фильм с указанным id = " + request.getId() + " не найден."));
+        validate(request.getMpa(), request.getGenres(), request.getDirectors());
+    }
+
+    private void validate(MpaDto mpaDto, Set<GenreDto> genreDtos, Set<DirectorDto> directorDtos) {
+        Integer mpaId = mpaDto.getId();
+        Mpa mpa = mpaStorage.findMpaById(mpaId)
+                .orElseThrow(() -> new ValidationException("Не существует рейтинга с ID:" + mpaId));
+
+        if (genreDtos != null) {
+            List<Integer> genreIds = genreDtos.stream()
+                    .map(GenreDto::getId)
+                    .toList();
+            int numOfExistingGenres = genreStorage.countExistingGenresFromList(genreIds);
+            if (genreIds.size() != numOfExistingGenres) {
+                throw new ValidationException("Передан несуществующий жанр");
+            }
+        }
+
+        if (directorDtos != null) {
+            List<Integer> directorIds = directorDtos.stream()
+                    .map(DirectorDto::getId)
+                    .toList();
+            int numOfExistingDirectors = directorStorage.countExistingDirectorsFromList(directorIds);
+
+            if (directorIds.size() != numOfExistingDirectors) {
+                throw new ValidationException("Передан несуществующий режиссер");
+            }
+        }
+    }
+
+
 }

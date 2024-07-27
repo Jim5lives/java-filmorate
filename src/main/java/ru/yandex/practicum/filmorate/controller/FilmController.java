@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
-import ru.yandex.practicum.filmorate.dto.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.dto.UpdatedFilmRequest;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -30,13 +31,13 @@ public class FilmController {
     }
 
     @PostMapping
-    public FilmDto createFilm(@RequestBody NewFilmRequest request) {
+    public FilmDto createFilm(@RequestBody @Valid NewFilmRequest request) {
         log.info("Получен запрос на создание фильма");
         return filmService.createFilm(request);
     }
 
     @PutMapping
-    public FilmDto updateFilm(@RequestBody UpdateFilmRequest request) {
+    public FilmDto updateFilm(@RequestBody @Valid UpdatedFilmRequest request) {
         log.info("Получен запрос на обновление фильма");
         return filmService.updateFilm(request);
     }

@@ -87,7 +87,6 @@ public class BaseStorage<T> {
         }
     }
 
-
     protected void update(String query, Object... params) {
         int rowsUpdated = jdbc.update(query, params);
         if (rowsUpdated == 0) {
