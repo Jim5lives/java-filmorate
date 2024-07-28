@@ -12,8 +12,15 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.service.*;
-import ru.yandex.practicum.filmorate.storage.*;
+import ru.yandex.practicum.filmorate.service.implementations.FilmServiceImpl;
+import ru.yandex.practicum.filmorate.service.implementations.MpaServiceImpl;
+import ru.yandex.practicum.filmorate.service.interfaces.FilmService;
+import ru.yandex.practicum.filmorate.service.interfaces.MpaService;
+import ru.yandex.practicum.filmorate.service.interfaces.UserService;
+import ru.yandex.practicum.filmorate.storage.implementations.*;
+import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.storage.mappers.*;
 
 import java.time.Duration;

@@ -2,9 +2,9 @@ package ru.yandex.practicum.filmorate.mappers;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.dto.NewReviewRequest;
-import ru.yandex.practicum.filmorate.dto.ReviewDto;
-import ru.yandex.practicum.filmorate.dto.UpdatedReviewRequest;
+import ru.yandex.practicum.filmorate.dto.review.NewReviewRequest;
+import ru.yandex.practicum.filmorate.dto.review.ReviewDto;
+import ru.yandex.practicum.filmorate.dto.review.UpdatedReviewRequest;
 import ru.yandex.practicum.filmorate.model.Review;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

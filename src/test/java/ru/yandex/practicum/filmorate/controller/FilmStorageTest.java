@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.implementations.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
