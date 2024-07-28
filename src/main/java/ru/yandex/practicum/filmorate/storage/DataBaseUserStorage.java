@@ -1,12 +1,19 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.mappers.EventRowMapper;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +33,15 @@ public class DataBaseUserStorage extends BaseStorage<User> implements UserStorag
             + " f2 ON au.id = f2.user_id WHERE f.user_id = ?";
     private static final String ADD_FRIEND_QUERY = "INSERT INTO friends(user_id, friend_id) VALUES (?, ?)";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
+    private static final String DELETE_USER_QUERY = "DELETE FROM app_user WHERE id = ?";
+    private static final String ADD_EVENT_QUERY = "INSERT INTO events(e_timestamp, user_id, " +
+            "operation, type, entity_id) VALUES (?, ?, ?, ?, ?)";
+    private static final String GET_EVENT_QUERY = "SELECT * from events WHERE user_id = ?";
+    private static final Logger log = LoggerFactory.getLogger(DataBaseUserStorage.class);
 
     public DataBaseUserStorage(JdbcTemplate jdbc, ResultSetExtractor<List<User>> listExtractor) {
         super(listExtractor, jdbc);
     }
-
 
     @Override
     public Collection<User> getAllUsers() {
@@ -91,5 +102,22 @@ public class DataBaseUserStorage extends BaseStorage<User> implements UserStorag
         Optional<User> friendOpt = findOneExtractor(checkIfAlreadyFriend, userId, friendId);
 
         return friendOpt.isPresent();
+    }
+
+    @Override
+    public void deleteUserById(int id) {
+        delete(DELETE_USER_QUERY, id);
+    }
+
+    @Override
+    public void addEvent(Integer userId, Integer entityId, EventType type, OperationType operation) {
+        int id = insert(ADD_EVENT_QUERY, LocalDateTime.now(), userId, operation.toString(), type.toString(), entityId);
+        log.info("Добавлено событие в ленту с id = {}, UID = {}, entity = {}, type = {}, operation = {}.",
+                id, userId, entityId, type, operation);
+    }
+
+    @Override
+    public Collection<Event> getFeed(Integer userId) {
+        return jdbc.query(GET_EVENT_QUERY, new EventRowMapper(), userId);
     }
 }

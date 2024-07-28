@@ -24,9 +24,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @ContextConfiguration(classes = {UserStorage.class, DataBaseUserStorage.class, UserResultSetExtractor.class,
         UserListResultSetExtractor.class, UserService.class, FilmService.class, DataBaseGenreStorage.class,
-        FilmResultSetExtractor.class, FilmListResultSetExtractor.class, FilmServiceImpl.class, GenreRowMapper.class,
-        MpaRowMapper.class, FilmStorage.class, DataBaseFilmStorage.class, MpaStorage.class, MpaService.class,
-        MpaServiceImpl.class, DataBaseMpaStorage.class, MpaRowMapper.class})
+        DataBaseDirectorStorage.class, FilmResultSetExtractor.class, FilmListResultSetExtractor.class,
+        FilmServiceImpl.class, GenreRowMapper.class, DirectorRowMapper.class, MpaRowMapper.class, FilmStorage.class,
+        DataBaseFilmStorage.class, MpaStorage.class, MpaService.class, MpaServiceImpl.class,
+        DataBaseMpaStorage.class, MpaRowMapper.class})
 class MpaDBTests {
     private final DataBaseMpaStorage mpaStorage;
 

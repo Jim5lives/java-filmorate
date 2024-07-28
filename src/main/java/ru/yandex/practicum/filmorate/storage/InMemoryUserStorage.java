@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -91,6 +94,16 @@ public class InMemoryUserStorage implements UserStorage {
         return Optional.empty();
     }
 
+    @Override
+    public Collection<Event> getFeed(Integer userId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addEvent(Integer userId, Integer entityId, EventType type, OperationType operation) {
+        throw new UnsupportedOperationException();
+    }
+
     private boolean isEmailDuplicated(String newEmail) {
         return users.values().stream()
                 .map(User::getEmail)
@@ -99,5 +112,14 @@ public class InMemoryUserStorage implements UserStorage {
 
     private Integer getNextUserId() {
         return ++id;
+    }
+
+    @Override
+    public void deleteUserById(int id) {
+        if (users.containsKey(id)) {
+            users.remove(id);
+        } else {
+            throw new NotFoundException("Пользователь не найден");
+        }
     }
 }

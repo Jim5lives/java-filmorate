@@ -29,6 +29,12 @@ public class BaseStorage<T> {
         this.jdbc = jdbc;
     }
 
+    public BaseStorage(JdbcTemplate jdbc, RowMapper<T> mapper, ResultSetExtractor<List<T>> listExtractor) {
+        this.jdbc = jdbc;
+        this.mapper = mapper;
+        this.listExtractor = listExtractor;
+    }
+
     protected Integer insert(String query, Object... params) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -80,7 +86,6 @@ public class BaseStorage<T> {
             return Optional.empty();
         }
     }
-
 
     protected void update(String query, Object... params) {
         int rowsUpdated = jdbc.update(query, params);

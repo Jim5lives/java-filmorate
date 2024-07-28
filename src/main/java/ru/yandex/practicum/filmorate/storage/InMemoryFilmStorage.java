@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validators.FilmValidator.isFilmInfoValid;
 
@@ -73,7 +74,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopularFilms(int count) {
+    public Collection<Film> getPopularFilms(int count, Integer year, Integer genreId) {
         List<Film> popularFilms = getAllFilms().stream()
                 .sorted(Comparator.comparingInt(film -> film.getLikes().size()))
                 .limit(count)
@@ -81,7 +82,47 @@ public class InMemoryFilmStorage implements FilmStorage {
         return popularFilms.reversed();
     }
 
+    @Override
+    public Collection<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return List.of();
+    }
+
+    @Override
+    public Collection<Film> search(String query, String by) {
+        throw new UnsupportedOperationException();
+    }
+
     private Integer getNextFilmId() {
         return ++id;
+    }
+
+    @Override
+    public void deleteFilmById(int id) {
+        if (films.containsKey(id)) {
+            films.remove(id);
+        } else {
+            throw new NotFoundException("Фильм не найден");
+        }
+    }
+
+    @Override
+    public List<Film> getFilmsByDirector(String sortBy, Integer directorId) {
+        List<Film> films = getAllFilms().stream()
+                .filter(film -> film.getDirectors().stream()
+                        .anyMatch(director -> director.getId().equals(directorId)))
+                .collect(Collectors.toList());
+
+        if ("likes".equalsIgnoreCase(sortBy)) {
+            films.sort((f1, f2) -> f2.getLikes().size() - f1.getLikes().size());
+        } else if ("releaseDate".equalsIgnoreCase(sortBy)) {
+            films.sort((f1, f2) -> f2.getReleaseDate().compareTo(f1.getReleaseDate()));
+        }
+
+        return films;
+    }
+
+    @Override
+    public Collection<Film> getLikedFilmsUser(Integer userId) {
+        throw new UnsupportedOperationException();
     }
 }

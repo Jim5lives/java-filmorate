@@ -22,7 +22,7 @@ class FilmValidatorTest {
     @Test
     void isFilmInfoValid_shouldThrowValidationExceptionWhen_nameIsNull() {
         Film film = new Film(0, null, "Description", null,
-                LocalDate.of(2000, 1, 1), null);
+                LocalDate.of(2000, 1, 1), null, null);
 
         Assertions.assertThrows(ValidationException.class, () -> FilmValidator.isFilmInfoValid(film));
     }
@@ -30,7 +30,7 @@ class FilmValidatorTest {
     @Test
     void isFilmInfoValid_shouldThrowValidationExceptionWhen_nameIsBlank() {
         Film film = new Film(0, "", "Description", null,
-                LocalDate.of(2000, 1, 1), null);
+                LocalDate.of(2000, 1, 1), null, null);
 
         Assertions.assertThrows(ValidationException.class, () -> FilmValidator.isFilmInfoValid(film));
     }
@@ -40,7 +40,7 @@ class FilmValidatorTest {
         Film film = new Film(0, "Film", "keioeskqtamrocnfsemkgollhfdifjldcvegbonuvcceqfxlasj" +
                 "jhvgksasdcibfagqzsdgwmyrcklnswjttuveparavwucnbcwtnjucedtxawpqbafydgdqiamtlmuuvfaqffvmpwedgqyuwpncx" +
                 "rcjzzutnjyahzqzkpbswglvtmkktpemxauqkklpnk21231fnjplvnvmj", null,
-                LocalDate.of(2000, 1, 1), null);
+                LocalDate.of(2000, 1, 1), null, null);
 
         Assertions.assertThrows(ValidationException.class, () -> FilmValidator.isFilmInfoValid(film));
     }
@@ -48,7 +48,7 @@ class FilmValidatorTest {
     @Test
     void isFilmInfoValid_shouldThrowValidationExceptionWhen_releaseDateIsBefore_1895_12_28() {
         Film film = new Film(0, "Film", "Description", null,
-                LocalDate.of(1895, 12, 27), null);
+                LocalDate.of(1895, 12, 27), null, null);
 
         Assertions.assertThrows(ValidationException.class, () -> FilmValidator.isFilmInfoValid(film));
     }

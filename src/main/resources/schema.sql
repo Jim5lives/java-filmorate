@@ -1,3 +1,17 @@
+DROP TABLE IF EXISTS film_likes;
+DROP TABLE IF EXISTS film_genres;
+DROP TABLE IF EXISTS film_directors;
+DROP TABLE IF EXISTS friends;
+DROP TABLE IF EXISTS review_likes_dislikes;
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS film;
+DROP TABLE IF EXISTS genre;
+DROP TABLE IF EXISTS director;
+DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS mpa;
+DROP TABLE IF EXISTS app_user;
+
+
 CREATE TABLE IF NOT EXISTS mpa (
     id INTEGER PRIMARY KEY,
     name VARCHAR(10) UNIQUE
@@ -22,8 +36,8 @@ CREATE TABLE IF NOT EXISTS app_user (
 
 CREATE TABLE IF NOT EXISTS film_likes (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    film_id INTEGER REFERENCES film(id),
-    user_id INTEGER REFERENCES app_user(id)
+    film_id INTEGER REFERENCES film(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS genre (
@@ -33,12 +47,47 @@ CREATE TABLE IF NOT EXISTS genre (
 
 CREATE TABLE IF NOT EXISTS film_genres (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    film_id INTEGER REFERENCES film(id),
+    film_id INTEGER REFERENCES film(id) ON DELETE CASCADE,
     genre_id INTEGER REFERENCES genre(id)
+);
+
+CREATE TABLE IF NOT EXISTS director (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS film_directors (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    film_id INTEGER REFERENCES film(id) ON DELETE CASCADE,
+    director_id INTEGER REFERENCES director(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS friends (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE,
+    friend_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     user_id INTEGER REFERENCES app_user(id),
-    friend_id INTEGER REFERENCES app_user(id)
+    film_id INTEGER REFERENCES film(id),
+    content VARCHAR(255),
+    isPositive integer
+);
+
+CREATE TABLE IF NOT EXISTS review_likes_dislikes (
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE,
+    review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
+    like_dislike INTEGER,
+    PRIMARY KEY (user_id, review_id)
+);
+
+CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    e_timestamp TIMESTAMP,
+    user_id INTEGER REFERENCES app_user(id) ON DELETE CASCADE,
+    operation ENUM('ADD', 'UPDATE', 'REMOVE'),
+    type ENUM('REVIEW', 'FRIEND', 'LIKE'),
+    entity_id INTEGER
 );
